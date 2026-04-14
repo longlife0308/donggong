@@ -1624,10 +1624,15 @@ function renderDetail(){
   const roc=ROC(YR);
   const lunarStr=apiDay&&apiDay.ld?((apiDay.lp?'閏':'')+LM[(apiDay.lm-1)%12]+LN[apiDay.ld-1]):'';
   const D=document.getElementById('rPane');D.innerHTML='';
+  // 手機版：同步寫入底部面板 body
+  const _mobBody=document.getElementById('mob-sheet-body');
+  if(_mobBody)_mobBody.innerHTML=''; // 每次重新渲染前先清空
+  const _isMob=isMobile();
+  const _appendCard=(node)=>{_appendCard(node);if(_isMob&&_mobBody)_mobBody.appendChild(node.cloneNode(true));};
   const mk_=(s,bg='var(--bg)')=>{const d=document.createElement('div');d.className='card';if(bg!=='var(--bg)')d.style.background=bg;d.innerHTML=s;return d;};
   const sec=(t,c)=>`<div class="sec"${c?` style="color:${c}"`:''} >${t}</div>`;
-  if(h){D.appendChild(mk_(`<div style="text-align:center;font-size:16px;font-weight:600;color:#c0392b;padding:4px">★ ${h}</div>`,'#fff0f0'));}
-  D.appendChild(mk_(`${sec('選定日期')}
+  if(h){_appendCard(mk_(`<div style="text-align:center;font-size:16px;font-weight:600;color:#c0392b;padding:4px">★ ${h}</div>`,'#fff0f0'));}
+  _appendCard(mk_(`${sec('選定日期')}
     <div style="font-size:14px;font-weight:600;color:var(--dark);margin-bottom:3px">民國${roc}年${MO}月${SEL}日</div>
     <div style="font-size:12px;color:var(--mid);margin-bottom:2px">${lunarStr?`農曆 ${lunarStr}`:'農曆 （請AI更新）'}</div>
     <div style="font-size:12px;color:var(--mid)">${gm}月　${gz}日</div>
@@ -1662,7 +1667,7 @@ function renderDetail(){
         ${yiBadge||jiBad?`<div style="margin-top:4px;display:flex;flex-direction:column;gap:2px">${yiBadge}${jiBad}</div>`:''}
       </div>`;
     };
-    D.appendChild(mk_(`
+    _appendCard(mk_(`
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
         <span style="font-size:16px">🌱</span>
         <div>
@@ -1690,7 +1695,7 @@ function renderDetail(){
   const _ulColor=USE_LEVEL_COLOR[_ov.useLevel]||'#888';
   const _ulLabel=USE_LEVEL_LABEL[_ov.useLevel]||'';
   const _conflictBadge=_ov.conflictFlag?`<span style="font-size:9px;background:#ffeaa7;color:#6c4b00;padding:2px 6px;border-radius:8px;border:1px solid #e0c040;margin-left:6px">⚡ 吉凶交雜</span>`:'';
-  D.appendChild(mk_(`
+  _appendCard(mk_(`
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
       <div style="width:44px;height:44px;border-radius:50%;background:${_deco.color};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0">${jc}</div>
       <div style="flex:1;min-width:0">
@@ -1715,7 +1720,7 @@ function renderDetail(){
       const s=_LS[h.level]||_LS.NEUTRAL;
       return`<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--brd)"><span style="background:${s.bg};color:${s.tc};padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600;flex-shrink:0;white-space:nowrap">${s.i} ${h.label}</span><div style="font-size:11px;color:var(--mid);line-height:1.5">${h.desc}</div></div>`;
     }).join('');
-    D.appendChild(mk_(`${sec('判斷原因')}<div style="margin-top:2px">${_hH}</div>`));
+    _appendCard(mk_(`${sec('判斷原因')}<div style="margin-top:2px">${_hH}</div>`));
   }
   // Override Layer UI 已隱藏（資料層仍保留，影響 Zone 3 filteredYi 與 Zone 4 警告）
   {
@@ -1733,13 +1738,13 @@ function renderDetail(){
       el.addEventListener('mouseenter',e=>{e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip));});
       el.addEventListener('mouseleave',hideTip);
     });
-    D.appendChild(sNode);
+    _appendCard(sNode);
   }
   if(displayText){
     const hiText=hiGZ(displayText,gz);
     const _dayBr2=dayBr;
     const _dSha3=daySha3;
-    D.appendChild(mk_(`${sec('董公原文 — '+jcDz+'日（'+mbZh+'）','#6b3a1a')}
+    _appendCard(mk_(`${sec('董公原文 — '+jcDz+'日（'+mbZh+'）','#6b3a1a')}
       <div style="font-size:12px;color:#4a2010;line-height:1.95;background:#fff8f0;padding:9px 11px;border-radius:5px;border-left:3px solid #8b6914">${hiText}</div>
       ${spText?`<div style="font-size:10px;color:#8b6914;margin-top:4px">※ 本日 ${gz} 有特別注記（紅色粗體標出）</div>`:''}
       ${sha3?`<div style="font-size:11px;color:#8b0000;font-weight:500;margin-top:7px;padding:5px 8px;background:#fff5f5;border-radius:5px">⚑ 本月三煞：${sha3}</div>`:''}
@@ -1766,10 +1771,10 @@ function renderDetail(){
       _z3h+=`<div><span style="font-size:10px;color:#7b0000;font-weight:600">🚫 大凶禁用</span><div style="margin-top:4px">${_restricted.map(a=>`<span style="background:#fde8e8;color:#7b0000;border:1px solid #c0392b55;padding:2px 7px;border-radius:10px;font-size:11px;margin:2px;display:inline-block">${a}</span>`).join('')}</div></div>`;
     const _z3n=mk_(_z3h);
     _z3n.querySelectorAll('.dg-tip-pill').forEach(el=>{el.addEventListener('mouseenter',e=>{e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip||''));});el.addEventListener('mouseleave',hideTip);});
-    D.appendChild(_z3n);
+    _appendCard(_z3n);
   }
   const mSha3=sha3FromBr(MB_KEY.indexOf(mk)),dSha3=daySha3;
-  D.appendChild(mk_(`${sec('正沖・三煞方位')}
+  _appendCard(mk_(`${sec('正沖・三煞方位')}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px">
       <div style="background:var(--bg2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:10px;color:var(--lite)">正沖生肖</div><div style="font-size:16px;font-weight:600;color:#c0392b">${CD[dayBr]}年生</div></div>
       <div style="background:var(--bg2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:10px;color:var(--lite)">刀砧日</div><div style="font-size:13px;font-weight:600;color:${isDz?'#a32d2d':'var(--lite)'}">${isDz?'⚑ 是':'否'}</div></div>
@@ -1798,13 +1803,13 @@ function renderDetail(){
     else if(h.isLaw){c='#1a6b3a';bg='#e8f5e9';bdr='#a5d6a7';tipTxt='✅法訣吉時';}
     return`<span class="${cls}" style="padding:2px 6px;border-radius:4px;background:${bg};color:${c};border:1px solid ${bdr};margin:2px;display:inline-block;font-size:12px;font-weight:${fw}" title="${tipTxt}">${h.hour}時${mark}</span>`;
   }).join('');
-  D.appendChild(mk_(`${sec('擇日吉時（法訣∩太陽太陰）')}<div style="margin-bottom:6px">${jiHtml}</div>
+  _appendCard(mk_(`${sec('擇日吉時（法訣∩太陽太陰）')}<div style="margin-bottom:6px">${jiHtml}</div>
 <div style="font-size:10.5px;background:#fffbf0;border-radius:4px;padding:4px 8px;margin-bottom:5px;border:1px solid #e8c878"><span style="color:#7a3c00;font-weight:600">⭐ 法訣∩太陽太陰交集：</span><b style="color:#b8622a">${goldStr}</b></div>
 <div style="font-size:11px;color:var(--lite);line-height:1.7">☀ 太陽時（${ya}時）${fh.some(h=>h.hour===ya&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br>☽ 太陰時（${yi2}時）${fh.some(h=>h.hour===yi2&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br><span style="font-size:10px">⭐=三層交集 ☀☽=兩層 ✅=法訣單層</span></div>`));}
   {const xf=XIU_FANG[dz]||[];
   if(xf.length){const lb=['正沖方','刑方','煞方','死方','墓方','絕方'],cols=['#c0392b','#c0392b','#d35400','#8b4513','#8b4513','#6b3a1a'],bgs=['#fff5f5','#fff5f5','#fff5f5','#fff8f0','#fff8f0','#fff8f0'];
   const ch=lb.map((l,i)=>`<div style="background:${bgs[i]};border-radius:5px;padding:4px;text-align:center"><div style="font-size:9px;color:${cols[i]};font-weight:500">${l}</div><div style="font-size:14px;font-weight:600;color:${cols[i]}">${xf[i]}方</div></div>`).join('');
-  D.appendChild(mk_(`${sec('修方動土應避凶方（烏兔法訣）')}<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">${ch}</div><div style="font-size:10px;color:var(--lite);margin-top:5px;line-height:1.5">${dz}日，興工修造勿犯以上六方，尤以正沖${xf[0]}方、煞${xf[2]}方最忌。</div>`));}}
+  _appendCard(mk_(`${sec('修方動土應避凶方（烏兔法訣）')}<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">${ch}</div><div style="font-size:10px;color:var(--lite);margin-top:5px;line-height:1.5">${dz}日，興工修造勿犯以上六方，尤以正沖${xf[0]}方、煞${xf[2]}方最忌。</div>`));}}
   // ── v17 Zone 4: 補充提示 ────────────────────────────
   {
     const _z4w=[...ev?.warnings||[]];
@@ -1818,17 +1823,17 @@ function renderDetail(){
     let _z4h=sec('補充提示');
     if(_z4w.length)_z4h+=_z4w.map(w=>`<div style="font-size:11px;color:#6b3a1a;background:#fff8f0;padding:4px 8px;border-radius:4px;margin-bottom:3px;line-height:1.6">${w}</div>`).join('');
     _z4h+=`<div style="font-size:9.5px;color:var(--lite);margin-top:5px;border-top:1px solid var(--brd);padding-top:4px">📜 通用通則。事主年命日柱若天剋地沖本日，仍不可用。重大事宜請合盤細推。</div>`;
-    D.appendChild(mk_(_z4h));
+    _appendCard(mk_(_z4h));
   }
-  D.appendChild(mk_(`${sec('行程事件')}
+  _appendCard(mk_(`${sec('行程事件')}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <span style="font-size:12px;color:var(--lite)">${sevts.length}個行程</span>
       <div style="display:flex;gap:4px"><button onclick="openEF()" style="padding:3px 9px;font-size:11px">+行程</button><button onclick="openDA()" style="padding:3px 9px;font-size:11px;color:var(--blue);border-color:var(--blue)">⏰鬧鐘</button></div>
     </div>
     ${da?.on?`<div style="padding:5px 8px;background:#fff8e6;border-left:3px solid var(--gold);border-radius:0 5px 5px 0;margin-bottom:5px;font-size:12px;color:var(--gold)">⏰ ${da.h}:${da.m}${da.note?' – '+da.note:''}</div>`:''}
     ${sevts.map(e2=>`<div style="display:flex;align-items:flex-start;gap:5px;padding:5px 7px;margin-bottom:3px;border-radius:5px;background:var(--bg2);border-left:3px solid ${e2.color}"><div style="flex:1"><div style="font-size:13px;font-weight:500">${e2.title}</div>${e2.note?`<div style="font-size:11px;color:var(--lite);margin-top:1px">${e2.note}</div>`:''}</div><button onclick="editEF('${e2.id}')" style="padding:2px 5px;font-size:11px">✎</button><button onclick="delEV('${e2.id}')" style="padding:2px 5px;font-size:11px;color:#a32d2d;border-color:#a32d2d">✕</button></div>`).join('')}`));
-  if(PANE==='ef')D.appendChild(buildEF());
-  if(PANE==='da')D.appendChild(buildDA());
+  if(PANE==='ef')_appendCard(buildEF());
+  if(PANE==='da')_appendCard(buildDA());
 }
 
 function buildEF(){const d=document.createElement('div');d.className='card';d.style.cssText='background:#fffbf0;border-color:var(--gold)';d.innerHTML=`<div style="font-size:13px;font-weight:500;margin-bottom:10px">${EID?'編輯':'新增'}行程 — ${MO}/${SEL}</div><input type="text" id="ef_t" value="${EF.title}" placeholder="行程標題 *" oninput="EF.title=this.value" style="width:100%;margin-bottom:8px"><div style="margin-bottom:8px"><div style="font-size:11px;color:var(--lite);margin-bottom:4px">顏色</div><div style="display:flex;gap:5px">${ECOLS.map(c=>`<div onclick="EF.color='${c}';renderDetail()" style="width:22px;height:22px;border-radius:50%;background:${c};cursor:pointer;outline:${EF.color===c?`2.5px solid ${c}`:'none'};outline-offset:2px"></div>`).join('')}</div></div><input type="text" value="${EF.note||''}" placeholder="備註" oninput="EF.note=this.value" style="width:100%;margin-bottom:10px"><div style="display:flex;gap:6px"><button onclick="closePane()" style="flex:1">取消</button><button onclick="saveEF()" style="flex:1;background:#8b6914;color:#fff;border-color:#8b6914">儲存</button></div>`;return d;}
@@ -2461,15 +2466,16 @@ function mobSheetOpen(){
   const sheet=document.getElementById('mob-detail-sheet');
   const body=document.getElementById('mob-sheet-body');
   if(!sheet||!body)return;
-  // 把 rPane 內容複製到底部面板
-  const rp=document.getElementById('rPane');
-  body.innerHTML=rp?rp.innerHTML:'';
+  // 內容已由 renderDetail 的 _appendCard 同步寫入，直接開啟
   sheet.classList.add('open');
   document.body.style.overflow='hidden';
-  // 重新綁定 tooltip
+  // 重新綁定 tooltip（touchstart）
   body.querySelectorAll('.dg-tip-pill,.shen-pill').forEach(el=>{
     el.addEventListener('touchstart',e=>{e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip||''));},{passive:true});
   });
+  // 滾回頂部
+  const panel=sheet.querySelector('.sheet-panel');
+  if(panel)panel.scrollTop=0;
 }
 
 function mobSheetClose(){
