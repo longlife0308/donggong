@@ -49,12 +49,12 @@ input[type=range]{width:100%;accent-color:var(--gold)}
 /* ═══════════════════════════════════════════
    手機側拉面板 (日期詳情)
 ════════════════════════════════════════════ */
-#mob-detail-sheet{display:none;position:fixed;inset:0;z-index:800;pointer-events:none}
+#mob-detail-sheet{display:none;position:fixed;inset:0;z-index:800;pointer-events:none;visibility:hidden}
 #mob-detail-sheet .sheet-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.4);pointer-events:auto;opacity:0;transition:opacity .28s}
 #mob-detail-sheet .sheet-panel{position:absolute;bottom:0;left:0;right:0;background:var(--bg);border-radius:16px 16px 0 0;max-height:88vh;overflow-y:auto;pointer-events:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);padding:0 0 env(safe-area-inset-bottom,16px) 0}
 #mob-detail-sheet .sheet-handle{width:36px;height:4px;background:var(--brd);border-radius:2px;margin:10px auto 0;flex-shrink:0}
 #mob-detail-sheet .sheet-body{padding:8px 14px 20px}
-#mob-detail-sheet.open{pointer-events:auto}
+#mob-detail-sheet.open{pointer-events:auto;visibility:visible}
 #mob-detail-sheet.open .sheet-backdrop{opacity:1}
 #mob-detail-sheet.open .sheet-panel{transform:translateY(0)}
 
@@ -95,8 +95,8 @@ input[type=range]{width:100%;accent-color:var(--gold)}
   /* 顯示底部導覽 */
   #mob-nav{display:block!important}
 
-  /* 底部詳情面板 */
-  #mob-detail-sheet{display:block!important}
+  /* 手機日期詳情底部滑出面板 — 用 visibility 控制，避免蓋住月曆 */
+  #mob-detail-sheet{display:block!important;visibility:hidden}
 
   /* QA 按鈕 */
   #qa-panel-btn{bottom:62px!important}
@@ -1483,7 +1483,16 @@ function renderCal(){
     if(isStart)cls+=' hol-span-start';else if(isMid)cls+=' hol-span-mid';else if(isEnd)cls+=' hol-span-end';
     cell.className=cls;
     cell.dataset.d=d;
-    cell.onclick=()=>{SEL=d;PANE='detail';renderCal();renderDetail();if(isMobile())setTimeout(()=>mobSheetOpen(),80);};
+    // 手機用 touchend 避免 300ms 延遲；桌面用 onclick
+    if(isMobile()){
+      cell.addEventListener('touchend',function(e){
+        e.preventDefault();
+        SEL=d;PANE='detail';renderCal();renderDetail();
+        setTimeout(()=>mobSheetOpen(),50);
+      },{passive:false});
+    }else{
+      cell.onclick=()=>{SEL=d;PANE='detail';renderCal();renderDetail();};
+    }
     const mbIdx=MB_KEY.indexOf(dong.mk),mbZhFull=mbIdx>=0?MB_ZH_ARR[mbIdx]:'─';
     cell.onmouseenter=e=>{
       showTip(e,buildCalTooltip(result));
