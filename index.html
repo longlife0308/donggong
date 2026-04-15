@@ -8,16 +8,16 @@
 <meta name="theme-color" content="#8b0000">
 <title>董公擇日萬年曆 v17</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#fdf8f0;--bg2:#f7efe0;--bg3:#ede0cc;--red:#c0392b;--gold:#8b6914;--dark:#2c1810;--mid:#5a3e28;--lite:#9b7c5a;--grn:#1a6b3a;--blue:#1a4a8b;--brd:#d4b896}
-html,body{height:100%;background:var(--bg);font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif;overflow-x:hidden}
+html,body{height:100%;background:var(--bg);font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif}
 .card{background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:10px 12px;margin-bottom:7px}
-button{cursor:pointer;font-family:inherit;border-radius:6px;border:1px solid var(--brd);background:var(--bg2);color:var(--dark);padding:4px 10px;font-size:13px;touch-action:manipulation}
-button:active{background:var(--bg3)}
+button{cursor:pointer;font-family:inherit;border-radius:6px;border:1px solid var(--brd);background:var(--bg2);color:var(--dark);padding:4px 10px;font-size:13px}
+button:hover{background:var(--bg3)}
 input[type=text],input[type=number],input[type=password]{border:1px solid var(--brd);border-radius:5px;padding:3px 7px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--dark)}
 input[type=range]{width:100%;accent-color:var(--gold)}
 #tip{position:fixed;background:#1a0e08f5;color:#fdf8f0;padding:10px 13px;border-radius:9px;font-size:12px;z-index:9999;max-width:360px;max-height:70vh;overflow-y:auto;line-height:1.85;pointer-events:none;white-space:pre-wrap;border:1px solid var(--gold);display:none;box-shadow:0 4px 20px rgba(0,0,0,.4)}
-.cell{border:1px solid var(--brd);border-radius:7px;background:var(--bg2);cursor:pointer;padding:4px 4px 3px;min-height:110px;display:flex;flex-direction:column;gap:1px;transition:background .1s;position:relative;overflow:hidden;word-break:break-word}
+.cell{border:1px solid var(--brd);border-radius:7px;background:var(--bg2);cursor:pointer;padding:4px 4px 3px;min-height:110px;display:flex;flex-direction:column;gap:1px;transition:background .1s;position:relative;overflow:hidden}
 .cell:hover{background:var(--bg3)}
 .cell.sel{border:2px solid var(--gold)!important;background:#fdf0d0!important}
 .cell.tod{border:2px solid var(--red)!important;background:#fff5f5!important}
@@ -33,93 +33,60 @@ input[type=range]{width:100%;accent-color:var(--gold)}
 .modal{background:var(--bg);border-radius:12px;padding:20px;width:540px;max-height:88vh;overflow-y:auto;border:1px solid var(--brd)}
 .yi-item{background:#e8f5e9;color:#1b5e20;padding:2px 8px;border-radius:5px;font-size:11px;border:1px solid #a5d6a7;display:inline-block;margin:2px}
 .ji-item{background:#fce4ec;color:#880e4f;padding:2px 8px;border-radius:5px;font-size:11px;border:1px solid #f48fb1;display:inline-block;margin:2px}
+
 .gold-hour{color:#b8622a!important;font-weight:700!important;border:1px solid #b8622a!important;background:#fff8e6!important;border-radius:4px;padding:2px 5px;}
+.cell{word-break:break-word;}
 .jie-label{font-size:9px;color:#7a5500;background:linear-gradient(135deg,#fff9e0,#ffe090);border:1px solid #c8a951;border-radius:3px;padding:1px 5px;font-weight:600;text-align:center;letter-spacing:.5px;margin-bottom:2px;white-space:nowrap;display:block;}
 .mb-trans{font-size:8px;color:#5a3e28;background:#fdf0d0;border-radius:3px;padding:1px 3px;text-align:center;margin-top:1px;font-weight:500;white-space:nowrap;letter-spacing:.3px;}
 
-/* ═══════════════════════════════════════════
-   手機底部導覽列
-════════════════════════════════════════════ */
-#mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--brd);z-index:500;padding:0 0 env(safe-area-inset-bottom,0) 0}
-#mob-nav .nav-bar{display:flex;height:52px}
-#mob-nav .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:9.5px;color:var(--lite);border:none;background:none;border-radius:0;padding:6px 0;cursor:pointer;touch-action:manipulation}
-#mob-nav .nb.active{color:var(--red);font-weight:600}
-#mob-nav .nb svg{width:20px;height:20px}
+@media(max-width:768px){#app{min-width:100%!important;flex-direction:column!important;}#app>div{width:100%!important;min-width:0!important;}#grid{grid-template-columns:repeat(7,1fr)!important;}}
+/* ─── 手機底部導覽 ─── */
+#mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:600;background:var(--bg);border-top:1px solid var(--brd);padding-bottom:env(safe-area-inset-bottom,0)}
+#mob-nav .nb-row{display:flex;height:54px}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:9.5px;color:var(--lite);background:none;border:none;border-radius:0;padding:5px 0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.nb.act{color:var(--red);font-weight:600}
+.nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
 
-/* ═══════════════════════════════════════════
-   手機側拉面板 (日期詳情)
-════════════════════════════════════════════ */
-#mob-detail-sheet{display:none;position:fixed;inset:0;z-index:800;pointer-events:none;visibility:hidden}
-#mob-detail-sheet .sheet-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.4);pointer-events:auto;opacity:0;transition:opacity .28s}
-#mob-detail-sheet .sheet-panel{position:absolute;bottom:0;left:0;right:0;background:var(--bg);border-radius:16px 16px 0 0;max-height:88vh;overflow-y:auto;pointer-events:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);padding:0 0 env(safe-area-inset-bottom,16px) 0}
-#mob-detail-sheet .sheet-handle{width:36px;height:4px;background:var(--brd);border-radius:2px;margin:10px auto 0;flex-shrink:0}
-#mob-detail-sheet .sheet-body{padding:8px 14px 20px}
-#mob-detail-sheet.open{pointer-events:auto;visibility:visible}
-#mob-detail-sheet.open .sheet-backdrop{opacity:1}
-#mob-detail-sheet.open .sheet-panel{transform:translateY(0)}
+/* ─── 底部詳情滑出面板 ─── */
+/* mob-sheet uses inline style */
 
-/* ═══════════════════════════════════════════
-   RWD — 手機佈局
-════════════════════════════════════════════ */
+/* ─── RWD 手機版 ─── */
 @media(max-width:768px){
-  #app{padding:6px 6px 70px!important;min-width:0!important}
-
-  /* 標題列 */
-  #mob-header{display:flex!important}
+  *{-webkit-tap-highlight-color:transparent}
+  #app{padding:6px 6px 68px!important;min-width:0!important}
   .desk-header{display:none!important}
-
-  /* 三欄→單欄 */
+  #mob-topbar{display:flex!important}
   .main-layout{flex-direction:column!important;gap:0!important}
   .side-left{display:none!important}
-  #rPane{display:none!important;width:100%!important}
-
-  /* 月曆 */
-  .cal-nav{margin-bottom:6px!important}
-  .cal-nav button{padding:8px 16px!important;font-size:16px!important}
-  #mTitle{font-size:15px!important}
-  #grid{gap:2px!important}
-  .cell{min-height:68px!important;padding:3px 2px!important;border-radius:5px}
-  .cell .gz-text{font-size:10px!important}
-  .cell .de-text{font-size:9px!important}
-  .cell .lm-text{font-size:8.5px!important}
-  .cell .verdict-row{font-size:8px!important}
-  .badge{font-size:7.5px!important;padding:1px 3px!important}
-  .hol-banner{font-size:8.5px!important}
-
-  /* 週標題 */
-  .week-hdr div{font-size:11px!important;padding:3px!important}
-
-  /* Modal */
-  .modal{width:92vw!important;padding:14px!important}
-
-  /* 顯示底部導覽 */
+  #rPane{display:none!important}
   #mob-nav{display:block!important}
-
-  /* 手機日期詳情底部滑出面板 — 用 visibility 控制，避免蓋住月曆 */
-  #mob-detail-sheet{display:block!important;visibility:hidden}
-
-  /* QA 按鈕 */
-  #qa-panel-btn{bottom:62px!important}
+  .cell{min-height:72px!important;padding:3px 2px!important;font-size:92%}
+  .hol-banner{font-size:8.5px!important}
+  .badge{font-size:7.5px!important;padding:1px 3px!important}
+  .modal{width:92vw!important;max-height:85vh!important;padding:14px!important}
+  .jie-label{font-size:8px!important}
+  .mb-trans{font-size:7.5px!important}
+  #qa-panel-btn{bottom:64px!important}
 }
-
-/* ─── 桌面專屬 ─── */
 @media(min-width:769px){
-  #mob-header{display:none!important}
+  #mob-topbar{display:none!important}
   #mob-nav{display:none!important}
-  #mob-detail-sheet{display:none!important}
+  #mob-sheet{display:none!important}
 }
+
 </style></head>
 <body>
 <div id="app" style="padding:10px;min-width:900px">
-<div id="mob-header" style="display:none;align-items:center;justify-content:space-between;padding:8px 4px 6px;margin-bottom:4px">
+<!-- 手機頂部列 -->
+<div id="mob-topbar" style="display:none;align-items:center;justify-content:space-between;padding:8px 4px 6px;margin-bottom:2px">
   <div style="font-size:16px;font-weight:700;font-family:STSong,serif;letter-spacing:2px;color:var(--dark)">董公擇日萬年曆</div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <div id="mob-clk" style="font-size:18px;font-weight:600;color:var(--dark);font-variant-numeric:tabular-nums"></div>
-    <button onclick="showModal('settingModal')" style="font-size:12px;padding:4px 8px;color:var(--blue);border-color:var(--blue)">⚙</button>
+  <div style="display:flex;gap:6px;align-items:center">
+    <span id="mob-clk" style="font-size:18px;font-weight:600;color:var(--dark);font-variant-numeric:tabular-nums"></span>
+    <button onclick="showModal('settingModal')" style="padding:5px 9px;font-size:13px;color:var(--blue);border-color:var(--blue)">⚙</button>
   </div>
 </div>
 <div id="tip"></div>
-<div class="card" style="margin-bottom:8px;position:relative;overflow:hidden">
+<div class="card desk-header" style="margin-bottom:8px;position:relative;overflow:hidden">
   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;opacity:.05;white-space:nowrap;font-family:STSong,serif;color:#8b0000;pointer-events:none;user-select:none;letter-spacing:6px">董公選擇日要覽</div>
   <div style="position:relative;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
     <div><div style="font-size:18px;font-weight:500;font-family:STSong,serif;letter-spacing:2px;color:var(--dark)">董公擇日萬年曆</div><div id="ygzLine" style="font-size:12px;color:var(--mid);margin-top:2px"></div></div>
@@ -269,38 +236,34 @@ input[type=range]{width:100%;accent-color:var(--gold)}
 </div></div>
 </div>
 
-<!-- 手機底部導覽列 -->
+<!-- 手機底部導覽 -->
 <div id="mob-nav">
-  <div class="nav-bar">
-    <button class="nb active" id="nb-cal" onclick="mobNav('cal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      月曆
+  <div class="nb-row">
+    <button class="nb act" id="nb-cal" onclick="mobTab('cal')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>月曆
     </button>
-    <button class="nb" id="nb-today" onclick="mobNav('today')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12,6 12,12 16,14"/></svg>
-      今日
+    <button class="nb" id="nb-tod" onclick="mobTab('today')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12,6 12,12 16,14"/></svg>今日
     </button>
-    <button class="nb" id="nb-hol" onclick="fetchGovCalendar();mobNav('cal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-      更新行政曆
+    <button class="nb" id="nb-hol" onclick="fetchGovCalendar()">
+      <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>行政曆
     </button>
     <button class="nb" id="nb-set" onclick="showModal('settingModal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      設定
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>設定
     </button>
   </div>
 </div>
 
-<!-- 手機日期詳情底部滑出面板 -->
-<div id="mob-detail-sheet">
-  <div class="sheet-backdrop" onclick="mobSheetClose()"></div>
-  <div class="sheet-panel">
-    <div class="sheet-handle"></div>
-    <div class="sheet-body" id="mob-sheet-body"></div>
+<!-- 手機日期詳情彈窗 -->
+<div id="mob-sheet" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center">
+  <div id="mob-sheet-box" style="width:100%;max-height:90vh;background:var(--bg);border-radius:20px 20px 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,16px)" onclick="event.stopPropagation()">
+    <div style="width:44px;height:4px;background:#c8a87a;border-radius:2px;margin:12px auto 0"></div>
+    <div style="display:flex;justify-content:flex-end;padding:6px 12px 0">
+      <button onclick="mobSheetClose()" style="font-size:12px;padding:3px 10px;color:#888;border-color:#ddd">✕ 關閉</button>
+    </div>
+    <div id="mob-sheet-body" style="padding:4px 14px 24px"></div>
   </div>
 </div>
-
-
 <script>
 const DDB={
  yin:{s:"三煞在北、亥子丑方忌修造動土",d:{
@@ -931,12 +894,12 @@ const FLY_POS=['中央','西北(乾)','西(兌)','東北(艮)','南(離)','北(�
 const STAR_NAME=['','一白水星','二黑土星','三碧木星','四綠木星','五黃土星','六白金星','七赤金星','八白土星','九紫火星'];
 function g5Y(yr){const s=getYearStar(yr);return FLY_POS[((5-s)%9+9)%9];}
 function sha3FromBr(br){
-  if([8,0,4].includes(br))return{dir:'南方',fang:'巳午未方'};
-  if([11,3,7].includes(br))return{dir:'西方',fang:'申酉戌方'};
-  if([2,6,10].includes(br))return{dir:'北方',fang:'亥子丑方'};
-  return{dir:'東方',fang:'寅卯辰方'};
+  if([8,0,4].includes(br))return{dir:'南',fang:'巳午未方',sit:'坐南向北'};
+  if([11,3,7].includes(br))return{dir:'西',fang:'申酉戌方',sit:'坐西向東'};
+  if([2,6,10].includes(br))return{dir:'北',fang:'亥子丑方',sit:'坐北向南'};
+  return{dir:'東',fang:'寅卯辰方',sit:'坐東向西'};
 }
-function g3S(yr){return sha3FromBr(((yr-4)%12+12)%12).dir;}
+function g3S(yr){return sha3FromBr(((yr-4)%12+12)%12).dir+'方';}
 
 const JISHI={'子':['丑','寅','辰','午','未','申'],'丑':['子','寅','卯','巳','午','未'],'寅':['丑','卯','辰','午','未','申'],'卯':['子','丑','辰','巳','午','未'],'辰':['子','丑','寅','卯','巳','午'],'巳':['丑','寅','卯','辰','午','未'],'午':['子','丑','卯','午','申','酉'],'未':['子','寅','卯','辰','巳','午'],'申':['子','丑','卯','巳','午','未'],'酉':['寅','卯','辰','午','未','申'],'戌':['丑','寅','卯','巳','午','申'],'亥':['子','丑','寅','辰','午','未']};
 const TAIYI={'甲':{陽:'子',陰:'亥'},'乙':{陽:'申',陰:'酉'},'丙':{陽:'辰',陰:'丑'},'丁':{陽:'寅',陰:'卯'},'戊':{陽:'午',陰:'未'},'己':{陽:'子',陰:'亥'},'庚':{陽:'申',陰:'酉'},'辛':{陽:'辰',陰:'丑'},'壬':{陽:'寅',陰:'卯'},'癸':{陽:'午',陰:'未'}};
@@ -1041,7 +1004,7 @@ function getDongForMonthBr(y,m,d,mb){
   const jiShen=ALL_SHEN.filter(s=>_gzScanText.includes(s)&&['黃沙','天喜','天月二德','天德','月德','黃羅紫檀','天皇地皇','金銀庫樓','文昌','天赦','火星','玄女偷修','玉堂聚寶','田塘','月財','庫貯','聚祿','天成','天富','華彩','聯珠','鑾輿','天燈'].includes(s));
   const xiongShen=ALL_SHEN.filter(s=>_gzScanText.includes(s)&&['煞入中宮','煞集中宮','白虎入中宮','朱雀勾絞','往亡','正四廢','六甲窮日','天地轉煞','重喪','猖鬼敗亡','十惡','九土鬼','天賊','木打寶瓶','自死之金','五行無氣','六不成六不合','螣蛇','勾陳','玄武','到州','受死','天瘟','土瘟','西沉','婦人之金','黑煞','空亡','月厭','瓦解','金神','陰府決遣','小紅沙'].includes(s));
   const mbZh=MB_ZH_ARR[mb]||'─';
-  const daySha3=sha3FromBr((dayBr+6)%12); // 日三煞：取正沖方向
+  const daySha3=sha3FromBr(dayBr); // 日三煞：取當日地支所在三煞方
   return{gz,jc,dz,gm,mb,mk,jcDz,text,spText,displayText,verdict,sha3,ev,jiShen,xiongShen,isBreak,hasSha,shaType,isSiFei,mbZh,dayBr,daySha3};
 }
 function getDong(y,m,d){
@@ -1082,7 +1045,7 @@ const DE_LEVEL_ORDER=['FATAL','BAD','LIMITED','MINOR_GOOD','GREAT_GOOD'];
 const DE_COLORS={
   FATAL:  {bg:'#fff0f0',color:'#7b0000',bar:'#7b0000',label:'◈ 大凶'},
   BAD:    {bg:'#fff5f5',color:'#a32d2d',bar:'#c0392b',label:'▼ 凶'},
-  LIMITED:{bg:'#fff9ed',color:'#b8622a',bar:'#e67e22',label:'◆ 有限'},
+  LIMITED:{bg:'#fff9ed',color:'#b8622a',bar:'#e67e22',label:'◆ 有限制'},
   MINOR_GOOD:{bg:'#f0f8fc',color:'#2471a3',bar:'#2980b9',label:'▲ 次吉'},
   GREAT_GOOD:{bg:'#f0f8f3',color:'#1a6b3a',bar:'#27ae60',label:'★ 大吉'},
   NEUTRAL:{bg:'var(--bg2)',color:'var(--mid)',bar:'#ccc',label:'─ 平常'},
@@ -1482,17 +1445,15 @@ function renderCal(){
     if(isSel)cls+=' sel';else if(isTod)cls+=' tod';else if(isHol)cls+=' hol';
     if(isStart)cls+=' hol-span-start';else if(isMid)cls+=' hol-span-mid';else if(isEnd)cls+=' hol-span-end';
     cell.className=cls;
-    cell.dataset.d=d;
-    // 手機用 touchend 避免 300ms 延遲；桌面用 onclick
-    if(isMobile()){
-      cell.addEventListener('touchend',function(e){
-        e.preventDefault();
-        SEL=d;PANE='detail';renderCal();renderDetail();
-        setTimeout(()=>mobSheetOpen(),50);
-      },{passive:false});
-    }else{
-      cell.onclick=()=>{SEL=d;PANE='detail';renderCal();renderDetail();};
-    }
+    cell.dataset.d=String(d);
+    cell.style.cursor='pointer';
+    cell.addEventListener('touchend',function(e){
+      e.preventDefault();
+      SEL=parseInt(this.dataset.d);PANE='detail';renderCal();renderDetail();mobSheetOpen();
+    },{passive:false});
+    cell.addEventListener('click',function(e){
+      if(window.innerWidth>768){SEL=parseInt(this.dataset.d);PANE='detail';renderCal();renderDetail();}
+    });
     const mbIdx=MB_KEY.indexOf(dong.mk),mbZhFull=mbIdx>=0?MB_ZH_ARR[mbIdx]:'─';
     cell.onmouseenter=e=>{
       showTip(e,buildCalTooltip(result));
@@ -1633,15 +1594,12 @@ function renderDetail(){
   const roc=ROC(YR);
   const lunarStr=apiDay&&apiDay.ld?((apiDay.lp?'閏':'')+LM[(apiDay.lm-1)%12]+LN[apiDay.ld-1]):'';
   const D=document.getElementById('rPane');D.innerHTML='';
-  // 手機版：同步寫入底部面板 body
-  const _mobBody=document.getElementById('mob-sheet-body');
-  if(_mobBody)_mobBody.innerHTML=''; // 每次重新渲染前先清空
-  const _isMob=isMobile();
-  const _appendCard=(node)=>{_appendCard(node);if(_isMob&&_mobBody)_mobBody.appendChild(node.cloneNode(true));};
+  const _sb=document.getElementById('mob-sheet-body');if(_sb)_sb.innerHTML='';
   const mk_=(s,bg='var(--bg)')=>{const d=document.createElement('div');d.className='card';if(bg!=='var(--bg)')d.style.background=bg;d.innerHTML=s;return d;};
+  const _ap=(node)=>{D.appendChild(node);if(_sb&&window.innerWidth<=768)_sb.appendChild(node.cloneNode(true));};
   const sec=(t,c)=>`<div class="sec"${c?` style="color:${c}"`:''} >${t}</div>`;
-  if(h){_appendCard(mk_(`<div style="text-align:center;font-size:16px;font-weight:600;color:#c0392b;padding:4px">★ ${h}</div>`,'#fff0f0'));}
-  _appendCard(mk_(`${sec('選定日期')}
+  if(h){_ap(mk_(`<div style="text-align:center;font-size:16px;font-weight:600;color:#c0392b;padding:4px">★ ${h}</div>`,'#fff0f0'));}
+  _ap(mk_(`${sec('選定日期')}
     <div style="font-size:14px;font-weight:600;color:var(--dark);margin-bottom:3px">民國${roc}年${MO}月${SEL}日</div>
     <div style="font-size:12px;color:var(--mid);margin-bottom:2px">${lunarStr?`農曆 ${lunarStr}`:'農曆 （請AI更新）'}</div>
     <div style="font-size:12px;color:var(--mid)">${gm}月　${gz}日</div>
@@ -1676,7 +1634,7 @@ function renderDetail(){
         ${yiBadge||jiBad?`<div style="margin-top:4px;display:flex;flex-direction:column;gap:2px">${yiBadge}${jiBad}</div>`:''}
       </div>`;
     };
-    _appendCard(mk_(`
+    _ap(mk_(`
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
         <span style="font-size:16px">🌱</span>
         <div>
@@ -1704,7 +1662,7 @@ function renderDetail(){
   const _ulColor=USE_LEVEL_COLOR[_ov.useLevel]||'#888';
   const _ulLabel=USE_LEVEL_LABEL[_ov.useLevel]||'';
   const _conflictBadge=_ov.conflictFlag?`<span style="font-size:9px;background:#ffeaa7;color:#6c4b00;padding:2px 6px;border-radius:8px;border:1px solid #e0c040;margin-left:6px">⚡ 吉凶交雜</span>`:'';
-  _appendCard(mk_(`
+  _ap(mk_(`
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
       <div style="width:44px;height:44px;border-radius:50%;background:${_deco.color};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0">${jc}</div>
       <div style="flex:1;min-width:0">
@@ -1729,7 +1687,7 @@ function renderDetail(){
       const s=_LS[h.level]||_LS.NEUTRAL;
       return`<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--brd)"><span style="background:${s.bg};color:${s.tc};padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600;flex-shrink:0;white-space:nowrap">${s.i} ${h.label}</span><div style="font-size:11px;color:var(--mid);line-height:1.5">${h.desc}</div></div>`;
     }).join('');
-    _appendCard(mk_(`${sec('判斷原因')}<div style="margin-top:2px">${_hH}</div>`));
+    _ap(mk_(`${sec('判斷原因')}<div style="margin-top:2px">${_hH}</div>`));
   }
   // Override Layer UI 已隱藏（資料層仍保留，影響 Zone 3 filteredYi 與 Zone 4 警告）
   {
@@ -1747,17 +1705,17 @@ function renderDetail(){
       el.addEventListener('mouseenter',e=>{e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip));});
       el.addEventListener('mouseleave',hideTip);
     });
-    _appendCard(sNode);
+    _ap(sNode);
   }
   if(displayText){
     const hiText=hiGZ(displayText,gz);
     const _dayBr2=dayBr;
     const _dSha3=daySha3;
-    _appendCard(mk_(`${sec('董公原文 — '+jcDz+'日（'+mbZh+'）','#6b3a1a')}
+    _ap(mk_(`${sec('董公原文 — '+jcDz+'日（'+mbZh+'）','#6b3a1a')}
       <div style="font-size:12px;color:#4a2010;line-height:1.95;background:#fff8f0;padding:9px 11px;border-radius:5px;border-left:3px solid #8b6914">${hiText}</div>
       ${spText?`<div style="font-size:10px;color:#8b6914;margin-top:4px">※ 本日 ${gz} 有特別注記（紅色粗體標出）</div>`:''}
       ${sha3?`<div style="font-size:11px;color:#8b0000;font-weight:500;margin-top:7px;padding:5px 8px;background:#fff5f5;border-radius:5px">⚑ 本月三煞：${sha3}</div>`:''}
-      <div style="font-size:11px;color:#d35400;font-weight:500;margin-top:5px;padding:5px 8px;background:#fff8f0;border-radius:5px">⚑ 日三煞（${BR[_dayBr2]}日・正沖${BR[(_dayBr2+6)%12]}）：${_dSha3.dir}（${_dSha3.fang}）忌修造動土</div>`,
+      <div style="font-size:11px;color:#d35400;font-weight:500;margin-top:5px;padding:5px 8px;background:#fff8f0;border-radius:5px">⚑ 日三煞（${BR[_dayBr2]}日）：煞在${_dSha3.dir}方・${_dSha3.sit}的房子忌修造動土</div>`,
     '#fffbf5'));
   }
   // ── v17 Zone 3: 用事建議 ────────────────────────────
@@ -1779,24 +1737,24 @@ function renderDetail(){
     if(_restricted.length)
       _z3h+=`<div><span style="font-size:10px;color:#7b0000;font-weight:600">🚫 大凶禁用</span><div style="margin-top:4px">${_restricted.map(a=>`<span style="background:#fde8e8;color:#7b0000;border:1px solid #c0392b55;padding:2px 7px;border-radius:10px;font-size:11px;margin:2px;display:inline-block">${a}</span>`).join('')}</div></div>`;
     const _z3n=mk_(_z3h);
-    _z3n.querySelectorAll('.dg-tip-pill').forEach(el=>{el.addEventListener('mouseenter',e=>{e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip||''));});el.addEventListener('mouseleave',hideTip);});
-    _appendCard(_z3n);
+    _z3n.querySelectorAll('.dg-tip-pill').forEach(el=>{el.addEventListener('mouseenter',e=>{e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip||''));});el.addEventListener('mouseleave',hideTip);el.addEventListener('touchstart',e=>{e.stopPropagation();e.preventDefault();showTip(e,decodeURIComponent(el.dataset.tip||''));},{passive:false});el.addEventListener('touchend',()=>setTimeout(hideTip,2200));});
+    _ap(_z3n);
   }
   const mSha3=sha3FromBr(MB_KEY.indexOf(mk)),dSha3=daySha3;
-  _appendCard(mk_(`${sec('正沖・三煞方位')}
+  _ap(mk_(`${sec('正沖・三煞方位')}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px">
       <div style="background:var(--bg2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:10px;color:var(--lite)">正沖生肖</div><div style="font-size:16px;font-weight:600;color:#c0392b">${CD[dayBr]}年生</div></div>
       <div style="background:var(--bg2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:10px;color:var(--lite)">刀砧日</div><div style="font-size:13px;font-weight:600;color:${isDz?'#a32d2d':'var(--lite)'}">${isDz?'⚑ 是':'否'}</div></div>
     </div>
     <div style="background:#fff5f5;border-radius:6px;padding:6px;margin-bottom:5px">
       <div style="font-size:9.5px;color:#a32d2d;font-weight:600;margin-bottom:3px">月三煞（${mbZh}）</div>
-      <div style="font-size:13px;font-weight:600;color:#c0392b">三煞在${mSha3.dir}</div>
-      <div style="font-size:10.5px;color:var(--mid);margin-top:1px">${mSha3.fang}忌修造動土・入宅・上樑・破土</div>
+      <div style="font-size:13px;font-weight:600;color:#c0392b">煞在${mSha3.dir}方</div>
+      <div style="font-size:10.5px;color:var(--mid);margin-top:1px">${mSha3.sit}的房子，忌修造動土・入宅・上樑・破土</div>
     </div>
     <div style="background:#fff8f0;border-radius:6px;padding:6px">
       <div style="font-size:9.5px;color:#d35400;font-weight:600;margin-bottom:3px">日三煞（${BR[dayBr]}日）</div>
-      <div style="font-size:13px;font-weight:600;color:#d35400">三煞在${dSha3.dir}</div>
-      <div style="font-size:10.5px;color:var(--mid);margin-top:1px">${dSha3.fang}坐向此方之房屋，忌修造動土</div>
+      <div style="font-size:13px;font-weight:600;color:#d35400">煞在${dSha3.dir}方</div>
+      <div style="font-size:10.5px;color:var(--mid);margin-top:1px">${dSha3.sit}的房子，忌修造動土</div>
     </div>`));
   {const fh=getFilteredHours(YR,MO,SEL);
   const ty=TAIYI[gz[0]]||{};const ya=ty['陽']||'',yi2=ty['陰']||'';
@@ -1812,13 +1770,13 @@ function renderDetail(){
     else if(h.isLaw){c='#1a6b3a';bg='#e8f5e9';bdr='#a5d6a7';tipTxt='✅法訣吉時';}
     return`<span class="${cls}" style="padding:2px 6px;border-radius:4px;background:${bg};color:${c};border:1px solid ${bdr};margin:2px;display:inline-block;font-size:12px;font-weight:${fw}" title="${tipTxt}">${h.hour}時${mark}</span>`;
   }).join('');
-  _appendCard(mk_(`${sec('擇日吉時（法訣∩太陽太陰）')}<div style="margin-bottom:6px">${jiHtml}</div>
+  _ap(mk_(`${sec('擇日吉時（法訣∩太陽太陰）')}<div style="margin-bottom:6px">${jiHtml}</div>
 <div style="font-size:10.5px;background:#fffbf0;border-radius:4px;padding:4px 8px;margin-bottom:5px;border:1px solid #e8c878"><span style="color:#7a3c00;font-weight:600">⭐ 法訣∩太陽太陰交集：</span><b style="color:#b8622a">${goldStr}</b></div>
 <div style="font-size:11px;color:var(--lite);line-height:1.7">☀ 太陽時（${ya}時）${fh.some(h=>h.hour===ya&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br>☽ 太陰時（${yi2}時）${fh.some(h=>h.hour===yi2&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br><span style="font-size:10px">⭐=三層交集 ☀☽=兩層 ✅=法訣單層</span></div>`));}
   {const xf=XIU_FANG[dz]||[];
   if(xf.length){const lb=['正沖方','刑方','煞方','死方','墓方','絕方'],cols=['#c0392b','#c0392b','#d35400','#8b4513','#8b4513','#6b3a1a'],bgs=['#fff5f5','#fff5f5','#fff5f5','#fff8f0','#fff8f0','#fff8f0'];
   const ch=lb.map((l,i)=>`<div style="background:${bgs[i]};border-radius:5px;padding:4px;text-align:center"><div style="font-size:9px;color:${cols[i]};font-weight:500">${l}</div><div style="font-size:14px;font-weight:600;color:${cols[i]}">${xf[i]}方</div></div>`).join('');
-  _appendCard(mk_(`${sec('修方動土應避凶方（烏兔法訣）')}<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">${ch}</div><div style="font-size:10px;color:var(--lite);margin-top:5px;line-height:1.5">${dz}日，興工修造勿犯以上六方，尤以正沖${xf[0]}方、煞${xf[2]}方最忌。</div>`));}}
+  _ap(mk_(`${sec('修方動土應避凶方（烏兔法訣）')}<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">${ch}</div><div style="font-size:10px;color:var(--lite);margin-top:5px;line-height:1.5">${dz}日，興工修造勿犯以上六方，尤以正沖${xf[0]}方、煞${xf[2]}方最忌。</div>`));}}
   // ── v17 Zone 4: 補充提示 ────────────────────────────
   {
     const _z4w=[...ev?.warnings||[]];
@@ -1832,17 +1790,17 @@ function renderDetail(){
     let _z4h=sec('補充提示');
     if(_z4w.length)_z4h+=_z4w.map(w=>`<div style="font-size:11px;color:#6b3a1a;background:#fff8f0;padding:4px 8px;border-radius:4px;margin-bottom:3px;line-height:1.6">${w}</div>`).join('');
     _z4h+=`<div style="font-size:9.5px;color:var(--lite);margin-top:5px;border-top:1px solid var(--brd);padding-top:4px">📜 通用通則。事主年命日柱若天剋地沖本日，仍不可用。重大事宜請合盤細推。</div>`;
-    _appendCard(mk_(_z4h));
+    _ap(mk_(_z4h));
   }
-  _appendCard(mk_(`${sec('行程事件')}
+  _ap(mk_(`${sec('行程事件')}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <span style="font-size:12px;color:var(--lite)">${sevts.length}個行程</span>
       <div style="display:flex;gap:4px"><button onclick="openEF()" style="padding:3px 9px;font-size:11px">+行程</button><button onclick="openDA()" style="padding:3px 9px;font-size:11px;color:var(--blue);border-color:var(--blue)">⏰鬧鐘</button></div>
     </div>
     ${da?.on?`<div style="padding:5px 8px;background:#fff8e6;border-left:3px solid var(--gold);border-radius:0 5px 5px 0;margin-bottom:5px;font-size:12px;color:var(--gold)">⏰ ${da.h}:${da.m}${da.note?' – '+da.note:''}</div>`:''}
     ${sevts.map(e2=>`<div style="display:flex;align-items:flex-start;gap:5px;padding:5px 7px;margin-bottom:3px;border-radius:5px;background:var(--bg2);border-left:3px solid ${e2.color}"><div style="flex:1"><div style="font-size:13px;font-weight:500">${e2.title}</div>${e2.note?`<div style="font-size:11px;color:var(--lite);margin-top:1px">${e2.note}</div>`:''}</div><button onclick="editEF('${e2.id}')" style="padding:2px 5px;font-size:11px">✎</button><button onclick="delEV('${e2.id}')" style="padding:2px 5px;font-size:11px;color:#a32d2d;border-color:#a32d2d">✕</button></div>`).join('')}`));
-  if(PANE==='ef')_appendCard(buildEF());
-  if(PANE==='da')_appendCard(buildDA());
+  if(PANE==='ef')_ap(buildEF());
+  if(PANE==='da')_ap(buildDA());
 }
 
 function buildEF(){const d=document.createElement('div');d.className='card';d.style.cssText='background:#fffbf0;border-color:var(--gold)';d.innerHTML=`<div style="font-size:13px;font-weight:500;margin-bottom:10px">${EID?'編輯':'新增'}行程 — ${MO}/${SEL}</div><input type="text" id="ef_t" value="${EF.title}" placeholder="行程標題 *" oninput="EF.title=this.value" style="width:100%;margin-bottom:8px"><div style="margin-bottom:8px"><div style="font-size:11px;color:var(--lite);margin-bottom:4px">顏色</div><div style="display:flex;gap:5px">${ECOLS.map(c=>`<div onclick="EF.color='${c}';renderDetail()" style="width:22px;height:22px;border-radius:50%;background:${c};cursor:pointer;outline:${EF.color===c?`2.5px solid ${c}`:'none'};outline-offset:2px"></div>`).join('')}</div></div><input type="text" value="${EF.note||''}" placeholder="備註" oninput="EF.note=this.value" style="width:100%;margin-bottom:10px"><div style="display:flex;gap:6px"><button onclick="closePane()" style="flex:1">取消</button><button onclick="saveEF()" style="flex:1;background:#8b6914;color:#fff;border-color:#8b6914">儲存</button></div>`;return d;}
@@ -2454,55 +2412,40 @@ function autoFixEngine(){
   return{fixed,buildErr};
 }
 
-// ═══════════════════════════════════════════════════════════
-// 📱 手機版功能
-// ═══════════════════════════════════════════════════════════
-function isMobile(){return window.innerWidth<=768;}
-
-function mobNav(tab){
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
-  const btn=document.getElementById('nb-'+tab);
-  if(btn)btn.classList.add('active');
-  if(tab==='today'){
-    gotoToday();
-    // 今日點擊後自動開啟詳情
-    setTimeout(()=>mobSheetOpen(),200);
+// ── 手機功能 ─────────────────────────────────
+function mobSheetOpen(){
+  var sheet=document.getElementById('mob-sheet');
+  if(!sheet)return;
+  sheet.style.display='flex';
+  document.body.style.overflow='hidden';
+  var box=document.getElementById('mob-sheet-box');
+  if(box)box.scrollTop=0;
+  // 重綁 tooltip
+  var body=document.getElementById('mob-sheet-body');
+  if(body){
+    body.querySelectorAll('[data-tip]').forEach(function(el){
+      el.addEventListener('touchstart',function(e){
+        e.stopPropagation();
+        showTip(e,decodeURIComponent(el.dataset.tip||''));
+      },{passive:true});
+      el.addEventListener('touchend',function(){setTimeout(hideTip,2500);});
+    });
   }
 }
-
-function mobSheetOpen(){
-  if(!isMobile())return;
-  const sheet=document.getElementById('mob-detail-sheet');
-  const body=document.getElementById('mob-sheet-body');
-  if(!sheet||!body)return;
-  // 內容已由 renderDetail 的 _appendCard 同步寫入，直接開啟
-  sheet.classList.add('open');
-  document.body.style.overflow='hidden';
-  // 重新綁定 tooltip（touchstart）
-  body.querySelectorAll('.dg-tip-pill,.shen-pill').forEach(el=>{
-    el.addEventListener('touchstart',e=>{e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip||''));},{passive:true});
-  });
-  // 滾回頂部
-  const panel=sheet.querySelector('.sheet-panel');
-  if(panel)panel.scrollTop=0;
-}
-
 function mobSheetClose(){
-  const sheet=document.getElementById('mob-detail-sheet');
-  if(sheet)sheet.classList.remove('open');
+  var sheet=document.getElementById('mob-sheet');
+  if(sheet)sheet.style.display='none';
   document.body.style.overflow='';
 }
-
-// 攔截手機上的格子點擊 → 開啟底部面板
-function _mobCellClick(d){
-  SEL=d;PANE='detail';renderDetail();
-  if(isMobile())setTimeout(()=>mobSheetOpen(),80);
+function mobTab(tab){
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('act');});
+  var btn=document.getElementById('nb-'+tab);if(btn)btn.classList.add('act');
+  if(tab==='today'){gotoToday();setTimeout(mobSheetOpen,250);}
+  else if(tab==='cal'){mobSheetClose();}
 }
-
-// 更新手機時鐘
-function _mobUpdClock(){
-  const el=document.getElementById('mob-clk');
-  if(el){const n=new Date();el.textContent=n.getHours()+':'+String(n.getMinutes()).padStart(2,'0');}
+function _mobClock(){
+  var el=document.getElementById('mob-clk');
+  if(el){var n=new Date();el.textContent=n.getHours()+':'+String(n.getMinutes()).padStart(2,'0');}
 }
 
 function init(){
@@ -2515,15 +2458,9 @@ function init(){
   storage.keys('da:').forEach(k=>{const v=storage.get(k);if(v)try{DA[k.replace('da:','')]=JSON.parse(v);}catch(e){}});
   document.getElementById('volV').textContent=Math.round(VOL*100)+'%';
   applyZ();renderAlarms();autoFixEngine();initGovCalYearSelect();renderAll();
-  // 手機時鐘
-  _mobUpdClock();setInterval(_mobUpdClock,10000);
-  // 手機：格子點擊改用 _mobCellClick
-  if(isMobile()){
-    document.getElementById('app').addEventListener('click',e=>{
-      const cell=e.target.closest('.cell');
-      if(cell&&cell.dataset.d){e.stopPropagation();_mobCellClick(parseInt(cell.dataset.d));}
-    });
-  }
+  // 手機初始化
+  _mobClock();setInterval(_mobClock,15000);
+  {var lastUp=storage.get('govCalUpdated_'+YR);var el=document.getElementById('govCalStatus');if(el&&lastUp)el.textContent='上次更新：'+lastUp;}
   // 側邊欄顯示上次更新時間
   {const lastUp=storage.get(`govCalUpdated_${YR}`);
   const el=document.getElementById('govCalStatus');
