@@ -13,7 +13,7 @@ button:hover{background:var(--bg3)}
 input[type=text],input[type=number],input[type=password]{border:1px solid var(--brd);border-radius:5px;padding:3px 7px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--dark)}
 input[type=range]{width:100%;accent-color:var(--gold)}
 #tip{position:fixed;background:#1a0e08f5;color:#fdf8f0;padding:10px 13px;border-radius:9px;font-size:12px;z-index:9999;max-width:360px;max-height:70vh;overflow-y:auto;line-height:1.85;pointer-events:none;white-space:pre-wrap;border:1px solid var(--gold);display:none;box-shadow:0 4px 20px rgba(0,0,0,.4)}
-.cell{border:1px solid var(--brd);border-radius:7px;background:var(--bg2);cursor:pointer;padding:4px 4px 3px;min-height:110px;display:flex;flex-direction:column;gap:1px;transition:background .1s;position:relative;overflow:hidden;touch-action:manipulation}
+.cell{border:1px solid var(--brd);border-radius:7px;background:var(--bg2);cursor:pointer;padding:4px 4px 3px;min-height:110px;display:flex;flex-direction:column;gap:1px;transition:background .1s;position:relative;overflow:hidden}
 .cell:hover{background:var(--bg3)}
 .cell.sel{border:2px solid var(--gold)!important;background:#fdf0d0!important}
 .cell.tod{border:2px solid var(--red)!important;background:#fff5f5!important}
@@ -43,8 +43,8 @@ input[type=range]{width:100%;accent-color:var(--gold)}
 .nb.act{color:var(--red);font-weight:600}
 .nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
 /* ─── 底部詳情彈窗 ─── */
-#mob-sheet{display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.45)}
-#mob-sheet-box{position:absolute;bottom:0;left:0;right:0;max-height:88vh;background:var(--bg);border-radius:20px 20px 0 0;overflow-y:scroll;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,20px);overscroll-behavior:contain}
+#mob-sheet{display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center}
+#mob-sheet-box{width:100%;max-height:90vh;background:var(--bg);border-radius:20px 20px 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,16px)}
 /* ─── 土地公動畫 ─── */
 @keyframes tdgSwing{0%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}100%{transform:rotate(-12deg)}}
 @keyframes tdgGlow{0%{opacity:.5}100%{opacity:1}}
@@ -94,12 +94,7 @@ input[type=range]{width:100%;accent-color:var(--gold)}
       <div id="tdg-title" style="font-size:13px;font-weight:700;letter-spacing:1px;text-shadow:0 1px 3px rgba(0,0,0,.4)"></div>
       <div id="tdg-sub" style="font-size:11px;opacity:.85;margin-top:2px">記得準備香燭金紙，感謝土地公庇佑！</div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
-      <button id="tdg-pray-btn" onclick="tdgPray(event)" style="font-size:11px;padding:4px 10px;background:rgba(255,215,0,.25);color:#ffe066;border:1px solid rgba(255,215,0,.5);border-radius:12px;font-weight:600">🙏 已祭拜</button>
-      <button onclick="tdgClose(event)" style="font-size:10px;padding:2px 8px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2);border-radius:10px">✕ 關閉</button>
-    </div>
   </div>
-  <div id="tdg-ingot-container" style="display:none;position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
 </div>
 <div id="tip"></div>
 <div class="card desk-header" style="margin-bottom:8px;position:relative;overflow:hidden">
@@ -137,7 +132,7 @@ input[type=range]{width:100%;accent-color:var(--gold)}
     <button onclick="gotoToday()" style="width:100%;font-size:12px;color:var(--red);border-color:var(--red);padding:4px">回今日</button>
   </div>
   <div class="card" style="margin-bottom:0">
-    <div class="sec">鬧鐘設定（9組）</div>
+    <div class="sec">鬧鐘設定（8組）</div>
     <div id="aList"></div>
     <div style="margin-top:7px;border-top:1px solid var(--brd);padding-top:7px">
       <div style="font-size:11px;color:var(--lite);margin-bottom:4px">音量 <span id="volV"></span></div>
@@ -164,6 +159,7 @@ input[type=range]{width:100%;accent-color:var(--gold)}
     <div style="text-align:center;font-size:13px;font-weight:500;color:#1a4a8b;padding:4px">六</div>
   </div>
   <div id="grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px"></div>
+<div id="calBottom" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px"></div>
 </div>
 <div style="width:285px;flex-shrink:0" id="rPane"></div>
 </div>
@@ -251,7 +247,6 @@ input[type=range]{width:100%;accent-color:var(--gold)}
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
   <button onclick="_fetchPatch(0);alert('曆法校準更新中…')" style="font-size:12px;color:var(--blue);border-color:var(--blue);padding:4px 10px">📅 校準曆法</button>
-  <button onclick="tdgCheck();if(document.getElementById('tdg-banner').style.display==='none'){var cst=getNowCST();var r=getLunarDayFull(cst.y,cst.m,cst.d,null);alert('今日農曆 ld='+(r?r.ld:'未知')+'，只有初二(2)或十六(16)才顯示土地公提醒');}" style="font-size:12px;color:#8b6914;border-color:#8b6914;padding:4px 10px">🏮 測試土地公</button>
   <button onclick="closeModal('settingModal')">關閉</button>
 </div>
 </div></div>
@@ -274,8 +269,8 @@ input[type=range]{width:100%;accent-color:var(--gold)}
   </div>
 </div>
 <!-- 手機詳情彈窗 -->
-<div id="mob-sheet" onclick="mobSheetClose()">
-  <div id="mob-sheet-box" onclick="event.stopPropagation()">
+<div id="mob-sheet" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center" onclick="mobSheetClose()">
+  <div id="mob-sheet-box" style="width:100%;max-height:90vh;background:var(--bg);border-radius:20px 20px 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,16px)" onclick="event.stopPropagation()">
     <div style="width:44px;height:4px;background:#c8a87a;border-radius:2px;margin:12px auto 0"></div>
     <div style="display:flex;justify-content:flex-end;padding:6px 12px 0">
       <button onclick="mobSheetClose()" style="font-size:12px;padding:3px 10px;color:#888;border-color:#ddd">✕ 關閉</button>
@@ -340,7 +335,7 @@ function getLunarDayEngine(y,m,d){
 }
 
 // 農曆補丁系統（多備援源）
-var _LUNAR_PATCH={'2026-05-16':1,'2026-08-12':1,'2026-12-08':1}; // 已知邊界修正
+var _LUNAR_PATCH={};
 (function(){
   try{var c=localStorage.getItem('LUNAR_PATCH_V2');if(c){var o=JSON.parse(c);if(o&&o.patch)_LUNAR_PATCH=o.patch;}}catch(e){}
   var last=parseInt(localStorage.getItem('LUNAR_PATCH_TS')||'0');
@@ -410,9 +405,9 @@ function applyYuRule(mbKey,jcDz,gz,ev){
 }
 
 // 月相更新
-function updateMoonPhase(){
-  var now=getNowCST();
-  var jd=(Date.UTC(now.y,now.m-1,now.d,12,0)-28800000)/86400000+2440587.5;
+function updateMoonPhase(ty,tm,td){
+  var cst=getNowCST();var y=ty||cst.y,m=tm||cst.m,d=td||cst.d;
+  var jd=(Date.UTC(y,m-1,d,12,0)-28800000)/86400000+2440587.5;
   try{
     var mp=getMoonPhase(jd);
     var ec=mp.eclipse;
@@ -443,8 +438,13 @@ function _bindTips(container){
 
 // 土地公 Banner
 var LM_ZH=['正','二','三','四','五','六','七','八','九','十','冬','臘'];
-function tdgCheck(){
-  var cst=getNowCST();var y=cst.y,m=cst.m,d=cst.d;
+function tdgCheck(ty,tm,td){
+  var _cst=getNowCST();
+  var y=ty||_cst.y,m=tm||_cst.m,d=td||_cst.d;
+  var _bn=document.getElementById('tdg-banner');
+  var _ic=document.getElementById('tdg-icon');
+  if(_bn){_bn.style.display='none';}
+  if(_ic){_ic.textContent='🏮';_ic.style.animation='tdgSwing 1.2s ease-in-out infinite';}
   var apiDay=getApiDay(d);
   var lunar=getLunarDayFull(y,m,d,apiDay&&apiDay.ld?apiDay:null);
   if(!lunar)return;
@@ -456,35 +456,10 @@ function tdgCheck(){
   var title=document.getElementById('tdg-title');
   var smoke=document.getElementById('tdg-smoke');
   if(!banner||!title)return;
-  title.textContent='今日農曆'+lmStr+ldStr+'，記得拜土地公！';
+  var isToday=(y===cst2.y&&m===cst2.m&&d===cst2.d);title.textContent=(isToday?'今日':'該日')+'農曆'+lmStr+ldStr+'，記得拜土地公！';
   banner.style.display='block';
   if(smoke){smoke.innerHTML='';for(var i=0;i<5;i++){var sp=document.createElement('span');sp.textContent='〜';sp.style.cssText='position:absolute;font-size:'+(10+i*2)+'px;color:rgba(255,255,255,.4);left:'+((-20+i*12))+'px;animation:tdgSmoke '+(1.2+i*.3)+'s ease-out '+(i*.25)+'s infinite;display:inline-block';smoke.appendChild(sp);}}
-}
-function tdgPray(e){
-  e.stopPropagation();
-  var icon=document.getElementById('tdg-icon');
-  var sub=document.getElementById('tdg-sub');
-  var btn=document.getElementById('tdg-pray-btn');
-  var ingots=document.getElementById('tdg-ingot-container');
-  if(!icon)return;
-  icon.textContent='😴';icon.style.animation='tdgSleep 2s ease-in-out infinite';
-  if(sub)sub.textContent='土地公收到供品，正在打盹，財運將至！';
-  if(btn){btn.disabled=true;btn.style.opacity='.4';btn.textContent='✅ 已祭拜';}
-  if(ingots){
-    ingots.style.display='block';
-    var cnt=0;
-    var timer=setInterval(function(){
-      cnt++;if(cnt>20){clearInterval(timer);return;}
-      var ing=document.createElement('span');
-      ing.textContent=cnt%3===0?'💎':'💰';
-      var tx=((Math.random()-0.5)*120)+'px';
-      ing.style.cssText='position:absolute;font-size:'+(16+Math.random()*10)+'px;bottom:0;left:'+(20+Math.random()*60)+'%;--tx:'+tx+';animation:tdgFloat '+(1.5+Math.random())+'s ease-out forwards';
-      ingots.appendChild(ing);
-      setTimeout(function(){ing.remove&&ing.remove();},2000);
-    },400);
-  }
-}
-function tdgClose(e){
+}{
   e.stopPropagation();
   var banner=document.getElementById('tdg-banner');
   if(banner){banner.style.opacity='0';banner.style.transition='opacity .3s';setTimeout(function(){banner.style.display='none';banner.style.opacity='1';},300);}
@@ -493,17 +468,16 @@ function tdgClose(e){
 // 手機功能
 function mobSheetOpen(){
   var sheet=document.getElementById('mob-sheet');
-  var body=document.getElementById('mob-sheet-body');
   if(!sheet)return;
-  sheet.style.display='block';
+  sheet.style.display='flex';
   document.body.style.overflow='hidden';
   var box=document.getElementById('mob-sheet-box');
-  if(box)setTimeout(function(){box.scrollTop=0;},50);
-  _bindTips(body);
+  if(box)box.scrollTop=0;
+  _bindTips(document.getElementById('mob-sheet-body'));
 }
 function mobSheetClose(){
   var sheet=document.getElementById('mob-sheet');
-  if(sheet)sheet.style.cssText='display:none';
+  if(sheet)sheet.style.display='none';
   document.body.style.overflow='';
 }
 function mobTab(tab){
@@ -1039,15 +1013,28 @@ function _findAllIn(text,startPos){
     if(text.indexOf(alias,startPos)!==-1&&!found.has(meta.name))found.set(meta.name,meta);
   return found;
 }
-const _JI_TAILS=['百事俱吉','百事皆吉','皆大吉','皆吉','大作大發','大吉','次吉','上吉','俱吉','吉昌','大利','益家門','進田產','旺丁財','添人口','旺人口','大旺','蓋照大'];
+const _JI_TAILS=['百事俱吉','百事皆吉','皆大吉','皆吉','大作大發','大吉','次吉','上吉','俱吉','吉昌','大利'];
 const _XIONG_TAILS=['斷不可用','非所宜用','不取','等事忌','不宜用事'];
-function _nearJi(text,pos){const w=text.slice(pos,Math.min(pos+40,text.length));return _JI_TAILS.some(t=>w.includes(t));}
+function _nearJi(text,pos){const w=text.slice(pos,pos+8);return _JI_TAILS.some(t=>w.includes(t));}
 function _startsXiong(text,pos){return _XIONG_TAILS.some(t=>text.startsWith(t,pos));}
 
 // ═══════════════════════════════════════════════════════════
 // 宜忌抽取器 v3（句型驅動・ActionObject・負向優先）
 // 回傳：{yi:[ActionObject],ji:[ActionObject],yi_conditional:[...],warnings:[]}
 // ═══════════════════════════════════════════════════════════
+const _YIJI_NAME_MAP={'小作':'小事可用','小修':'修繕','小葬':'安葬','葬日':'安葬','小小營為':'小事可用','小小修為':'修繕','偷修':'偷修起造'};
+const _YIJI_FILTER=new Set(['庚子月德','大用','通用','同上','全','小小急用','大作']);
+function _cleanYiJiNames(items){
+  if(!items||!items.length)return[];
+  return items.map(function(item){
+    var name=item&&item.name?item.name:String(item);
+    if(_YIJI_FILTER.has(name))return null;
+    var mapped=_YIJI_NAME_MAP[name];
+    if(mapped)return Object.assign({},item,{name:mapped});
+    return item;
+  }).filter(Boolean);
+}
+
 function extractYiJi(text){
   if(!text)return{yi:[],ji:[],yi_conditional:[],warnings:[]};
   const yiMap=new Map(),jiMap=new Map(),condMap=new Map();
@@ -1097,10 +1084,7 @@ function extractYiJi(text){
     }
     {let i=0;while((i=s.indexOf('如',i))!==-1){
       const{metas,end}=_scanRun(s,i+1);
-      // 加強：如後直接跟多個動詞列表，且句末有吉字
-      const restStr=s.slice(i+1);
-      const hasJi=_JI_TAILS.some(t=>restStr.includes(t));
-      if(metas.length>=1&&(hasJi||_nearJi(s,end)))
+      if(metas.length>=1&&_nearJi(s,end))
         metas.forEach(m=>{if(!jiMap.has(m.name))yiMap.set(m.name,{...m,source:'implicit_positive'});});
       i++;
     }}
@@ -1115,7 +1099,9 @@ function extractYiJi(text){
     }
   }
   jiMap.forEach((_,k)=>{yiMap.delete(k);condMap.delete(k);});
-  return{yi:[...yiMap.values()].slice(0,8),ji:[...jiMap.values()].slice(0,8),
+  const _cYi=_cleanYiJiNames([...yiMap.values()]);
+  const _cJi=_cleanYiJiNames([...jiMap.values()]);
+  return{yi:_cYi.slice(0,8),ji:_cJi.slice(0,8),
          yi_conditional:[...condMap.values()].slice(0,4),warnings:[]};
 }
 // 四層選時過濾（法訣 ∩ 太陽 ∩ 太陰 三層交集）
@@ -1524,38 +1510,33 @@ function getDongForMonthBrFull(y,m,d,mb){
 // → 返回 '十惡日、不可用。'（不含壬午那段）
 function _getGzSeg(text,gz){
   if(!text||!gz)return'';
-  const GZ_RE=/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/g;
+  const GZ=/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/g;
   const idx=text.indexOf(gz);
   if(idx<0)return'';
-  // 情境1：gz 後面緊跟「、」→ 可能在多干支列表裡，找整個列表後的共用段落
-  const afterGz=text.slice(idx+gz.length);
-  if(afterGz.startsWith('、')||afterGz.startsWith('，')||
-     (idx>0&&(text[idx-1]==='、'||text[idx-1]==='，'))){
-    // 找列表結束（遇到句號或無干支的文字開始）
-    let listEnd=idx;
-    let m2;GZ_RE.lastIndex=idx+2;
-    // 找列表中最後一個干支
-    let lastGzEnd=idx+gz.length;
-    const allGz=[];let tmpRe=/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/g;
-    let tmpM;
-    while((tmpM=tmpRe.exec(text))!==null){
-      if(tmpM.index>=idx)allGz.push({idx:tmpM.index,end:tmpM.index+2});
-    }
-    // 找連續干支列表的最後一個
+  const before=idx>0?text[idx-1]:'';
+  const afterCh=text[idx+gz.length]||'';
+  // 多干支共用段落：gz 前後有頓號
+  if(before==='、'||before==='，'||afterCh==='、'||afterCh==='，'){
+    const allGz=[]; let m2; GZ.lastIndex=0;
+    while((m2=GZ.exec(text))!==null) allGz.push({i:m2.index,e:m2.index+2});
     let grpEnd=idx+gz.length;
-    for(const g of allGz){
-      if(g.idx<=grpEnd+3){grpEnd=g.end;}else break;
-    }
-    // 取列表之後到下一個干支前的文字（共用說明）
-    const sharedText=text.slice(grpEnd);
-    const nextGz=sharedText.match(/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/);
-    const shared=(nextGz&&nextGz.index>0)?sharedText.slice(0,nextGz.index):sharedText;
-    if(shared.length>5)return shared; // 有意義的共用段落
+    for(const g of allGz){if(g.i>=idx&&g.i<=grpEnd+3)grpEnd=g.e;}
+    const afterList=text.slice(grpEnd);
+    const nextGz=afterList.match(/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/);
+    const shared=nextGz?afterList.slice(0,nextGz.index):afterList;
+    if(shared.replace(/[、，。\s]/g,'').length>3)return gz+shared;
   }
-  // 情境2：正常段落，gz 後取到下一個干支前
+  // 找 gz 所在句子
+  let ss=idx;
+  for(let i=idx-1;i>=0;i--){if(text[i]==='。'||text[i]==='；'||text[i]==='\n'){ss=i+1;break;}}
+  let se=text.length;
+  for(let i=idx;i<text.length;i++){if(text[i]==='。'||text[i]==='；'||text[i]==='\n'){se=i+1;break;}}
+  const sent=text.slice(ss,se);
+  // 正常段落：gz 後到下一個干支前
   const after=text.slice(idx+gz.length);
   const m=after.match(/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/);
-  return(m&&m.index>0)?after.slice(0,m.index):after;
+  const seg=(m&&m.index>0)?after.slice(0,m.index):after;
+  return seg.length>=sent.length-gz.length?seg:sent;
 }
 
 // 連假
@@ -1651,21 +1632,6 @@ function updateHeader(){
 function showTip(e,txt){if(!txt)return;const t=document.getElementById('tip');t.textContent=txt;t.style.display='block';moveTip(e);}
 function moveTip(e){const t=document.getElementById('tip');const tw=t.offsetWidth||360,th=t.offsetHeight||300;let x=e.clientX+14,y=e.clientY-16;if(x+tw>window.innerWidth)x=e.clientX-tw-4;if(x<0)x=4;if(y+th>window.innerHeight)y=window.innerHeight-th-8;if(y<0)y=4;t.style.left=x+'px';t.style.top=y+'px';}
 function hideTip(){document.getElementById('tip').style.display='none';}
-
-// 點任何地方關閉 tooltip（手機+桌機）
-document.addEventListener('touchstart',function(e){
-  var tip=document.getElementById('tip');
-  if(tip&&tip.style.display!=='none'){
-    // 如果點的不是 data-tip 元素，就關閉
-    if(!e.target.closest('[data-tip]'))hideTip();
-  }
-},{passive:true});
-document.addEventListener('click',function(e){
-  var tip=document.getElementById('tip');
-  if(tip&&tip.style.display!=='none'){
-    if(!e.target.closest('[data-tip]'))hideTip();
-  }
-});
 document.addEventListener('mousemove',e=>{if(document.getElementById('tip').style.display!=='none')moveTip(e);});
 
 const DAO_TIP='【刀砧日】此日刀砧凶煞當令，不利手術開刀。\n忌：手術・開刀・拔牙・針灸・宰殺。';
@@ -1751,9 +1717,11 @@ function renderCal(){
     if(isStart)cls+=' hol-span-start';else if(isMid)cls+=' hol-span-mid';else if(isEnd)cls+=' hol-span-end';
     cell.className=cls;
     cell.dataset.d=String(d);
-    cell.addEventListener('click',function(e){
-      SEL=parseInt(this.dataset.d);PANE='detail';renderCal();renderDetail();
-      if(window.innerWidth<=768)setTimeout(mobSheetOpen,30);
+    cell.addEventListener('touchend',function(e){
+      e.preventDefault();SEL=parseInt(this.dataset.d);PANE='detail';renderCal();renderDetail();mobSheetOpen();
+    },{passive:false});
+    cell.addEventListener('click',function(){
+      if(window.innerWidth>768){SEL=parseInt(this.dataset.d)||d;PANE='detail';renderCal();renderDetail();}
     });
     const mbIdx=MB_KEY.indexOf(dong.mk),mbZhFull=mbIdx>=0?MB_ZH_ARR[mbIdx]:'─';
     cell.onmouseenter=e=>{
@@ -1895,25 +1863,44 @@ function renderDetail(){
   const roc=ROC(YR);
   const lunarStr=apiDay&&apiDay.ld?((apiDay.lp?'閏':'')+LM[(apiDay.lm-1)%12]+LN[apiDay.ld-1]):'';
   const D=document.getElementById('rPane');D.innerHTML='';
-  // 手機版：同步寫入底部彈窗
+  const mk_=(s,bg='var(--bg)')=>{const d=document.createElement('div');d.className='card';if(bg!=='var(--bg)')d.style.background=bg;d.innerHTML=s;return d;};
+  // 手機彈窗同步
   const _sb=document.getElementById('mob-sheet-body');
   if(_sb)_sb.innerHTML='';
+  // _ap: 寫入 rPane + 手機彈窗
   const _D=D;
   const _ap=(node)=>{
     _D.appendChild(node);
     if(_sb){
-      const cl=node.cloneNode(true);
-      _sb.appendChild(cl);
-      // cloneNode 不複製事件，重綁 tooltip
-      cl.querySelectorAll('[data-tip]').forEach(function(el){
-        el.addEventListener('touchstart',function(e){e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip||''));},{passive:true});
-        el.addEventListener('touchend',function(){setTimeout(hideTip,2500);});
+      const _cl=node.cloneNode(true);
+      _sb.appendChild(_cl);
+      _cl.querySelectorAll('[data-tip]').forEach(function(el){
         el.addEventListener('mouseenter',function(e){e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip||''));});
         el.addEventListener('mouseleave',hideTip);
+        el.addEventListener('touchstart',function(e){e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip||''));},{passive:true});
+        el.addEventListener('touchend',function(){setTimeout(hideTip,2500);});
       });
     }
   };
-  const mk_=(s,bg='var(--bg)')=>{const d=document.createElement('div');d.className='card';if(bg!=='var(--bg)')d.style.background=bg;d.innerHTML=s;return d;};
+  // calBottom 三欄（col0=董公原文 | col1=修方動土 | col2=擇日吉時）
+  // 預建三欄容器，依序 0→1→2 固定 DOM 順序，避免 lazy-append 造成欄位錯位
+  const _cb=document.getElementById('calBottom');
+  if(_cb){_cb.innerHTML='';_cb.style.display='none';}
+  const _cbCols=[null,null,null];
+  if(_cb){for(let _ci=0;_ci<3;_ci++){const _dv=document.createElement('div');_dv.className='card';_dv.style.cssText='min-width:0;overflow:hidden;display:none;';_cb.appendChild(_dv);_cbCols[_ci]=_dv;}}
+  const _cbAp=(node,col)=>{
+    if(!_cb||!_cbCols[col])return;
+    const _dv=_cbCols[col];
+    _dv.innerHTML='';
+    const cl2=node.cloneNode(true);
+    _dv.appendChild(cl2);
+    _dv.style.display='';
+    cl2.querySelectorAll('[data-tip]').forEach(function(el){
+      el.addEventListener('mouseenter',function(e){showTip(e,decodeURIComponent(el.dataset.tip||''));});
+      el.addEventListener('mouseleave',hideTip);
+    });
+    _cb.style.display='grid';
+  };
   const sec=(t,c)=>`<div class="sec"${c?` style="color:${c}"`:''} >${t}</div>`;
   if(h){_ap(mk_(`<div style="text-align:center;font-size:16px;font-weight:600;color:#c0392b;padding:4px">★ ${h}</div>`,'#fff0f0'));}
   _ap(mk_(`${sec('選定日期')}
@@ -2028,12 +2015,12 @@ function renderDetail(){
     const hiText=hiGZ(displayText,gz);
     const _dayBr2=dayBr;
     const _dSha3=daySha3;
-    _ap(mk_(`${sec('董公原文 — '+jcDz+'日（'+mbZh+'）','#6b3a1a')}
+    _cbAp(mk_(`${sec('董公原文 — '+jcDz+'日（'+mbZh+'）','#6b3a1a')}
       <div style="font-size:12px;color:#4a2010;line-height:1.95;background:#fff8f0;padding:9px 11px;border-radius:5px;border-left:3px solid #8b6914">${hiText}</div>
       ${spText?`<div style="font-size:10px;color:#8b6914;margin-top:4px">※ 本日 ${gz} 有特別注記（紅色粗體標出）</div>`:''}
       ${sha3?`<div style="font-size:11px;color:#8b0000;font-weight:500;margin-top:7px;padding:5px 8px;background:#fff5f5;border-radius:5px">⚑ 本月三煞：${sha3}</div>`:''}
       <div style="font-size:11px;color:#d35400;font-weight:500;margin-top:5px;padding:5px 8px;background:#fff8f0;border-radius:5px">⚑ 日三煞（${BR[_dayBr2]}日・正沖${BR[(_dayBr2+6)%12]}）：煞在${_dSha3.dir}方・${_dSha3.sit}的房子忌修造動土</div>`,
-    '#fffbf5'));
+    '#fffbf5'),0);
   }
   // ── v17 Zone 3: 用事建議 ────────────────────────────
   {
@@ -2048,41 +2035,26 @@ function renderDetail(){
     const _restricted=_ov.restrictedActions.filter(a=>!_ov.allowedActions.includes(a));
     let _z3h=sec('用事建議');
     if(_ov.hasOverride&&_ov.useLevel==='C')
-      _z3h+=`<div style="font-size:10.5px;color:#d35400;font-weight:600;background:#fff3e0;padding:4px 8px;border-radius:5px;margin-bottom:6px;cursor:help" title="偷修日 / 諸神朝天：道家「神祇輪值離位」概念。特定干支（如甲戌、甲辰等）八方諸神上天朝賀，地界煞氣暫時歇息。僅限「修舊、補漏、換神位、安座」等守舊事務，忌新創與大事。">⚡ 偷修日（${USE_LEVEL_LABEL[_ov.useLevel]}）：謹慎使用以下限定項目 ❓</div>`;
-    const _isLimited=_de.level==='LIMITED';
+      _z3h+=`<div style="font-size:10.5px;color:#d35400;font-weight:600;background:#fff3e0;padding:4px 8px;border-radius:5px;margin-bottom:6px">⚡ 偷修日（玄女偷修）：八方俱白、諸神朝天，地界煞氣暫歇，可偷偷進行修舊補漏等守舊事務，不宜開基新建、嫁娶大事</div>`;
     if(_isFatal&&!_ov.hasOverride){
       const _fm=ev&&ev.yuWarn?ev.yuWarn+'（不可用）':'諸事不宜（大凶日）';
       _z3h+=`<div style="margin-bottom:6px"><span style="font-size:10px;color:#7b0000;font-weight:600">🚫 宜</span><div style="margin-top:4px"><span style="background:#fff0f0;color:#7b0000;border:1px solid #c0392b55;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:600">${_fm}</span></div></div>`;
     }else if((_isBad||(_isFatal&&_ov.hasOverride))&&_dYi.length===0){
       _z3h+=`<div style="margin-bottom:6px"><span style="font-size:10px;color:#a32d2d;font-weight:600">⚠ 宜</span><div style="margin-top:4px"><span style="background:#fff5f5;color:#a32d2d;border:1px solid #e0a0a055;padding:3px 10px;border-radius:8px;font-size:11px">不宜用事</span></div></div>`;
-    }else if(_isLimited&&_dYi.length===0){
-      const _limTop=_de.topDecision||'';
-      const _limitedMsg=ev&&ev.yuWarn?ev.yuWarn:
-        /月建/.test(_limTop)?'月建日：只可小事小作，不宜興工起造、嫁娶出行等大事':
-        /只可小小/.test(_limTop)||/小小營為/.test(_limTop)?'此日只可小事小作，大事主凶敗':
-        '此日氣場有限，只可小事，忌大事開創';
-      _z3h+=`<div style="margin-bottom:6px"><span style="font-size:10px;color:#b8622a;font-weight:600">⚠ 宜</span><div style="margin-top:4px"><span style="background:#fff8f0;color:#b8622a;border:1px solid #d4936055;padding:3px 10px;border-radius:8px;font-size:11px">${_limitedMsg}</span></div></div>`;
-    }else if(_dYi.length===0&&!_isFatal&&!_isBad&&!_isLimited){
-      // 吉日但無具體宜事 → 顯示判斷文字
-      const _goodMsg=_de.topDecision||'可用吉日（詳見原文）';
-      _z3h+=`<div style="margin-bottom:6px"><span style="font-size:10px;color:#1a6b3a;font-weight:600">✅ 宜</span><div style="margin-top:4px"><span style="background:#f0fff4;color:#1a6b3a;border:1px solid #a5d6a755;padding:3px 10px;border-radius:8px;font-size:11px">${_goodMsg}（詳見原文）</span></div></div>`;
     }else{
       _z3h+=`<div style="margin-bottom:6px"><span style="font-size:10px;color:#1a6b3a;font-weight:600">✅ 宜</span><div style="margin-top:4px">${dgRenderActionPills(_dYi,'yi-item')}</div></div>`;
     }
     if(_dCond.length)_z3h+=`<div style="margin-bottom:6px"><span style="font-size:10px;color:#8b6914;font-weight:600">☑ 條件宜</span><div style="margin-top:4px">${dgRenderConditionalPills(_dCond)}</div></div>`;
-    if(_isFatal&&!_ov.hasOverride){
-      // FATAL 忌欄不顯示
-    }else if(_dJi.length===0&&_dYi.length>0){
-      _z3h+=`<div style="margin-bottom:6px"><span style="font-size:10px;color:#a32d2d;font-weight:600">❌ 忌</span><div style="margin-top:4px"><span style="font-size:11px;color:#bbb;font-style:italic">原文未列明忌事</span></div></div>`;
-    }else if(_dJi.length>0){
-      _z3h+=`<div style="margin-bottom:6px"><span style="font-size:10px;color:#a32d2d;font-weight:600">❌ 忌</span><div style="margin-top:4px">${dgRenderActionPills(_dJi,'ji-item')}</div></div>`;
-    }
+    _z3h+=`<div style="margin-bottom:6px"><span style="font-size:10px;color:#a32d2d;font-weight:600">❌ 忌</span><div style="margin-top:4px">${dgRenderActionPills(_dJi,'ji-item')}</div></div>`;
     if(_restricted.length)
       _z3h+=`<div><span style="font-size:10px;color:#7b0000;font-weight:600">🚫 大凶禁用</span><div style="margin-top:4px">${_restricted.map(a=>`<span style="background:#fde8e8;color:#7b0000;border:1px solid #c0392b55;padding:2px 7px;border-radius:10px;font-size:11px;margin:2px;display:inline-block">${a}</span>`).join('')}</div></div>`;
     const _z3n=mk_(_z3h);
     _z3n.querySelectorAll('.dg-tip-pill').forEach(el=>{el.addEventListener('mouseenter',e=>{e.stopPropagation();showTip(e,decodeURIComponent(el.dataset.tip||''));});el.addEventListener('mouseleave',hideTip);});
     _ap(_z3n);
   }
+  // 月相+土地公跟著選定日期同步
+  updateMoonPhase(YR,MO,SEL);
+  tdgCheck(YR,MO,SEL);
   const mSha3=sha3FromBr(MB_KEY.indexOf(mk)),dSha3=daySha3;
   _ap(mk_(`${sec('正沖・三煞方位')}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px">
@@ -2113,28 +2085,14 @@ function renderDetail(){
     else if(h.isLaw){c='#1a6b3a';bg='#e8f5e9';bdr='#a5d6a7';tipTxt='✅法訣吉時';}
     return`<span class="${cls}" style="padding:2px 6px;border-radius:4px;background:${bg};color:${c};border:1px solid ${bdr};margin:2px;display:inline-block;font-size:12px;font-weight:${fw}" title="${tipTxt}">${h.hour}時${mark}</span>`;
   }).join('');
-  _ap(mk_(`${sec('擇日吉時（法訣∩太陽太陰）')}<div style="margin-bottom:6px">${jiHtml}</div>
+  _cbAp(mk_(`${sec('擇日吉時（法訣∩太陽太陰）')}<div style="margin-bottom:6px">${jiHtml}</div>
 <div style="font-size:10.5px;background:#fffbf0;border-radius:4px;padding:4px 8px;margin-bottom:5px;border:1px solid #e8c878"><span style="color:#7a3c00;font-weight:600">⭐ 法訣∩太陽太陰交集：</span><b style="color:#b8622a">${goldStr}</b></div>
-<div style="font-size:11px;color:var(--lite);line-height:1.7">☀ 太陽時（${ya}時）${fh.some(h=>h.hour===ya&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br>☽ 太陰時（${yi2}時）${fh.some(h=>h.hour===yi2&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br><span style="font-size:10px">⭐=三層交集 ☀☽=兩層 ✅=法訣單層</span></div>`));}
+<div style="font-size:11px;color:var(--lite);line-height:1.7">☀ 太陽時（${ya}時）${fh.some(h=>h.hour===ya&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br>☽ 太陰時（${yi2}時）${fh.some(h=>h.hour===yi2&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br><span style="font-size:10px">⭐=三層交集 ☀☽=兩層 ✅=法訣單層</span></div>`),2);}
   {const xf=XIU_FANG[dz]||[];
   if(xf.length){const lb=['正沖方','刑方','煞方','死方','墓方','絕方'],cols=['#c0392b','#c0392b','#d35400','#8b4513','#8b4513','#6b3a1a'],bgs=['#fff5f5','#fff5f5','#fff5f5','#fff8f0','#fff8f0','#fff8f0'];
   const ch=lb.map((l,i)=>`<div style="background:${bgs[i]};border-radius:5px;padding:4px;text-align:center"><div style="font-size:9px;color:${cols[i]};font-weight:500">${l}</div><div style="font-size:14px;font-weight:600;color:${cols[i]}">${xf[i]}方</div></div>`).join('');
-  _ap(mk_(`${sec('修方動土應避凶方（烏兔法訣）')}<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">${ch}</div><div style="font-size:10px;color:var(--lite);margin-top:5px;line-height:1.5">${dz}日，興工修造勿犯以上六方，尤以正沖${xf[0]}方、煞${xf[2]}方最忌。</div>`));}}
-  // ── v17 Zone 4: 補充提示 ────────────────────────────
-  {
-    const _z4w=[...ev?.warnings||[]];
-    if(ev?.warn&&!_z4w.includes(ev.warn))_z4w.push(ev.warn);
-    // 凶日：補充「諸事不宜」提示（只在 FATAL 顯示，避免與 DE 重複）
-    if(_de.level==='FATAL'&&!_z4w.some(w=>/諸事不宜|百事皆忌/.test(w)))
-      _z4w.unshift('本日屬大凶日，諸事不宜，尤忌重大事項。');
-    if(verdict==='liu_bu')_z4w.unshift('六不成六不合：用之終屬不利，宜慎之！主人口損傷、疾病纏綿。');
-    if(isDz)_z4w.push('🗡 刀砧日：不利手術開刀，忌動刀剪・針灸・拔牙。');
-    if(apiDay&&(apiDay.ld===2||apiDay.ld===16))_z4w.push(`✦ 農曆${apiDay.ld===2?'初二':'十六'}：宜拜土地公，備牲禮・香燭・金紙。`);
-    let _z4h=sec('補充提示');
-    if(_z4w.length)_z4h+=_z4w.map(w=>`<div style="font-size:11px;color:#6b3a1a;background:#fff8f0;padding:4px 8px;border-radius:4px;margin-bottom:3px;line-height:1.6">${w}</div>`).join('');
-    _z4h+=`<div style="font-size:9.5px;color:var(--lite);margin-top:5px;border-top:1px solid var(--brd);padding-top:4px">📜 通用通則。事主年命日柱若天剋地沖本日，仍不可用。重大事宜請合盤細推。</div>`;
-    _ap(mk_(_z4h));
-  }
+  _cbAp(mk_(`${sec('修方動土應避凶方（烏兔法訣）')}<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">${ch}</div><div style="font-size:10px;color:var(--lite);margin-top:5px;line-height:1.5">${dz}日，興工修造勿犯以上六方，尤以正沖${xf[0]}方、煞${xf[2]}方最忌。</div>`),1);}}
+  
   _ap(mk_(`${sec('行程事件')}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <span style="font-size:12px;color:var(--lite)">${sevts.length}個行程</span>
@@ -2726,7 +2684,7 @@ function autoFixEngine(){
   if(typeof window.SHI_E_LIST!=='undefined'){window.SHI_E_LIST=undefined;fixed++;console.warn('autoFix: 移除 SHI_E_LIST');}
   if(typeof window.YANG13!=='undefined'){window.YANG13=undefined;fixed++;console.warn('autoFix: 移除 YANG13');}
   // 2. 驗證 ev.ji 不包含總評詞（資料層）
-  window._cleanJi=(ji)=>(ji||[]).filter(j=>j&&!['諸事不宜','百事不宜','百事皆忌','諸事皆忌'].includes(j.name));
+  window._cleanJi=(ji)=>(ji||[]).filter(j=>j&&!['諸事不宜','百事不宜','百事皆忌','諸事皆忌','百事俱忌'].includes(j.name));
   // 3. 驗證 decision.allHits 每個 hit 有 source 標記
   window._validateHits=(hits)=>{
     (hits||[]).forEach(h=>{ if(!h.source)console.warn('hit 缺 source 標記:',h.name); });
@@ -2736,7 +2694,7 @@ function autoFixEngine(){
     // 使用字串比對而非 regex literal，避免 autoFixEngine 自身被誤判
     {label:'SHI_E_LIST 陣列宣告',test:(src)=>src.includes('const SHI'+'_E_LIST=[')},
     {label:'YANG13 陣列宣告',test:(src)=>src.includes('const YANG'+'13=[')},
-    {label:'displayText.includes 直接呼叫',test:(src)=>src.includes('display'+'Text.includes(')},
+    {label:'displayText.includes 直接呼叫',test:(src)=>src.includes('display'+'Text.includes('+')')},
     // ev.ji 直接賦值字串 → 101,118,46,106,105,61,91,39
     {label:'ev.ji 直接賦值字串陣列',test:(src)=>src.includes(String.fromCharCode(101,118,46,106,105,61,91,39))},
   ];
