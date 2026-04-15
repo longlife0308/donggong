@@ -43,8 +43,8 @@ input[type=range]{width:100%;accent-color:var(--gold)}
 .nb.act{color:var(--red);font-weight:600}
 .nb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
 /* ─── 底部詳情彈窗 ─── */
-#mob-sheet{display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center}
-#mob-sheet-box{width:100%;max-height:90vh;background:var(--bg);border-radius:20px 20px 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,16px)}
+#mob-sheet{display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.45)}
+#mob-sheet-box{position:absolute;bottom:0;left:0;right:0;max-height:88vh;background:var(--bg);border-radius:20px 20px 0 0;overflow-y:scroll;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,20px);overscroll-behavior:contain}
 /* ─── 土地公動畫 ─── */
 @keyframes tdgSwing{0%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}100%{transform:rotate(-12deg)}}
 @keyframes tdgGlow{0%{opacity:.5}100%{opacity:1}}
@@ -273,8 +273,8 @@ input[type=range]{width:100%;accent-color:var(--gold)}
   </div>
 </div>
 <!-- 手機詳情彈窗 -->
-<div id="mob-sheet" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center" onclick="mobSheetClose()">
-  <div id="mob-sheet-box" style="width:100%;max-height:90vh;background:var(--bg);border-radius:20px 20px 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,16px)" onclick="event.stopPropagation()">
+<div id="mob-sheet" onclick="mobSheetClose()">
+  <div id="mob-sheet-box" onclick="event.stopPropagation()">
     <div style="width:44px;height:4px;background:#c8a87a;border-radius:2px;margin:12px auto 0"></div>
     <div style="display:flex;justify-content:flex-end;padding:6px 12px 0">
       <button onclick="mobSheetClose()" style="font-size:12px;padding:3px 10px;color:#888;border-color:#ddd">✕ 關閉</button>
@@ -493,7 +493,7 @@ function tdgClose(e){
 function mobSheetOpen(){
   var sheet=document.getElementById('mob-sheet');
   if(!sheet)return;
-  sheet.style.display='flex';
+  sheet.style.display='block';
   document.body.style.overflow='hidden';
   var box=document.getElementById('mob-sheet-box');
   if(box)box.scrollTop=0;
@@ -1620,6 +1620,21 @@ function updateHeader(){
 function showTip(e,txt){if(!txt)return;const t=document.getElementById('tip');t.textContent=txt;t.style.display='block';moveTip(e);}
 function moveTip(e){const t=document.getElementById('tip');const tw=t.offsetWidth||360,th=t.offsetHeight||300;let x=e.clientX+14,y=e.clientY-16;if(x+tw>window.innerWidth)x=e.clientX-tw-4;if(x<0)x=4;if(y+th>window.innerHeight)y=window.innerHeight-th-8;if(y<0)y=4;t.style.left=x+'px';t.style.top=y+'px';}
 function hideTip(){document.getElementById('tip').style.display='none';}
+
+// 點任何地方關閉 tooltip（手機+桌機）
+document.addEventListener('touchstart',function(e){
+  var tip=document.getElementById('tip');
+  if(tip&&tip.style.display!=='none'){
+    // 如果點的不是 data-tip 元素，就關閉
+    if(!e.target.closest('[data-tip]'))hideTip();
+  }
+},{passive:true});
+document.addEventListener('click',function(e){
+  var tip=document.getElementById('tip');
+  if(tip&&tip.style.display!=='none'){
+    if(!e.target.closest('[data-tip]'))hideTip();
+  }
+});
 document.addEventListener('mousemove',e=>{if(document.getElementById('tip').style.display!=='none')moveTip(e);});
 
 const DAO_TIP='【刀砧日】此日刀砧凶煞當令，不利手術開刀。\n忌：手術・開刀・拔牙・針灸・宰殺。';
