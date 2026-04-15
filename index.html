@@ -459,10 +459,6 @@ function tdgCheck(ty,tm,td){
   var isToday=(y===cst2.y&&m===cst2.m&&d===cst2.d);title.textContent=(isToday?'今日':'該日')+'農曆'+lmStr+ldStr+'，記得拜土地公！';
   banner.style.display='block';
   if(smoke){smoke.innerHTML='';for(var i=0;i<5;i++){var sp=document.createElement('span');sp.textContent='〜';sp.style.cssText='position:absolute;font-size:'+(10+i*2)+'px;color:rgba(255,255,255,.4);left:'+((-20+i*12))+'px;animation:tdgSmoke '+(1.2+i*.3)+'s ease-out '+(i*.25)+'s infinite;display:inline-block';smoke.appendChild(sp);}}
-}{
-  e.stopPropagation();
-  var banner=document.getElementById('tdg-banner');
-  if(banner){banner.style.opacity='0';banner.style.transition='opacity .3s';setTimeout(function(){banner.style.display='none';banner.style.opacity='1';},300);}
 }
 
 // 手機功能
@@ -898,10 +894,12 @@ function getJieOnDay(y,m,d){
   const ck=`${y}-${m}-${d}`;
   if(_jieCache[ck]!==undefined)return _jieCache[ck];
   const jdS=(Date.UTC(y,m-1,d,0,0)-28800000)/86400000+2440587.5;
-  const jdM=jdS+0.5;
+  const jdE=jdS+1;
   for(const j of JIE_DATA){
-    const jd=findSolarTermJD(j.angle,jdM);
-    if(jd>=jdS&&jd<jdS+1){
+    // 搜尋中心用當天正午，並從前後各1天開始尋找（應對邊界誤差）
+    let jd=findSolarTermJD(j.angle,jdS+0.5);
+    if(Math.abs(jd-(jdS+0.5))>1.5) jd=findSolarTermJD(j.angle,jdS-0.5);
+    if(jd>=jdS&&jd<jdE){
       const t=jdToCST(jd);
       // ⚠ 安全邊界：交節在 00:05 前或 23:55 後，誤差 ±5min 可能導致跨日偏移
       const minOfDay=t.h*60+t.min;
@@ -1268,6 +1266,25 @@ function checkTianShe(gz,mb){
   if([11,0,1].includes(mb)&&gz==='甲子')return true;  // 冬甲子
   return false;
 }
+function checkYangGongJi(y,m,d){
+  // 楊公忌：直接用年份硬編碼（農曆月份不可靠）
+  if(y===2026){
+    var YANG_2026={'1-31':true,'2-28':true,'3-28':true,'4-26':true,
+      '5-24':true,'6-21':true,'7-19':true,'8-16':true,
+      '9-13':true,'10-11':true,'11-9':true,'12-7':true};
+    return YANG_2026[m+'-'+d]===true;
+  }
+  // 其他年份：用農曆引擎+農曆日計算
+  var eng=getLunarDayEngine(y,m,d);
+  if(!eng)return false;
+  var ld=eng.ld;
+  // 需要農曆月份才能判斷，暫用 LMD
+  var lb=getLunarBuiltin(y,m,d);
+  if(!lb||!lb.lm)return false;
+  const YANG_DAYS={1:13,2:11,3:9,4:7,5:5,6:3,7:1,8:27,9:25,10:23,11:21,12:19};
+  return YANG_DAYS[lb.lm]===ld;
+}
+
 function checkSiLiJue(y,m,d){
   // 四絕=立春/立夏/立秋/立冬前一天；四離=春分/夏至/秋分/冬至前一天
   const SIJ_NAMES=['立春','立夏','立秋','立冬'];
@@ -1313,10 +1330,14 @@ function runDecisionEngine(y,m,d,dong,apiDay){
       desc:'旬尾氣盡，五行無氣主絕，宜結案清帳入殮，忌開創婚嫁動工起造'});
   // 十惡大敗日：只有原文明示「十惡」才成立（移除 SHI_E_LIST 固定清單）
   if(_gzCondSeg&&/十惡/.test(_gzCondSeg))
-    hits.push({key:'shi_e',name:'十惡大敗日',label:'十惡大敗日',level:'BAD',source:'DONGGONG',fromSpText:!!spText,
+    hits.push({key:'shi_e',name:'十惡大敗日',label:'十惡大敗日',level:'FATAL',source:'DONGGONG',fromSpText:!!spText,
       desc:'十惡大敗之日，董公原文明示不可用，主突發破敗、財物全損'});
   // 楊公忌日：已移出決策層（改為月曆格 badge ＋ 補充提示，不干擾 topDecision）
   const siLiJue=checkSiLiJue(y,m,d);
+  // 楊公忌
+  if(checkYangGongJi(y,m,d))
+    hits.push({key:'yang_gong',name:'楊公忌',label:'楊公忌',level:'BAD',source:'DONGGONG',
+      desc:'楊公忌日，忌出行、婚嫁、開市、動土等大事，以靜為宜。'});
   if(siLiJue)
     hits.push({key:siLiJue.type,name:siLiJue.label,label:siLiJue.label,level:'BAD',source:'DONGGONG',desc:siLiJue.desc});
   if(jc==='建')
@@ -1334,7 +1355,7 @@ function runDecisionEngine(y,m,d,dong,apiDay){
       desc:'天地赦免萬罪，宜解紛重啟事業・安葬・動土，四時各一日'});
   const tmdNames=jiShen.filter(s=>['天月二德','天德','月德'].includes(s));
   if(tmdNames.length)
-    hits.push({key:'tmd',name:tmdNames.join('＋'),label:tmdNames.join('＋'),level:'MINOR_GOOD',source:'DONGGONG',
+    hits.push({key:'tmd',name:tmdNames.join('＋'),label:tmdNames.join('＋'),level:'GREAT_GOOD',source:'DONGGONG',
       desc:'公認最強吉神，化解官非小人侵害，利修造嫁娶動土（注：無法化解煞入中宮）'});
   // ── 基礎評定補充（無特殊命中時）────────────────────
   const hasNeg=hits.some(h=>['FATAL','BAD','LIMITED'].includes(h.level));
@@ -1389,9 +1410,9 @@ function buildOverrideLayer(dong, decision){
   let baseLevel='B';
   if(hitNames.has('月破日')||hitNames.has('正四廢日'))baseLevel='E';
   else if(hitNames.has('煞入中宮')||hitNames.has('白虎入中宮')||hitNames.has('煞集中宮'))baseLevel='E';
-  else if(decision.allHits.some(h=>/四絕日|四離日/.test(h.name||h.label)))baseLevel='D';
+  else if(decision.allHits.some(h=>/四絕日|四離日/.test(h.name||h.label)))baseLevel='E';
   else if(hitNames.has('六甲窮日'))baseLevel='D';
-  else if(hitNames.has('十惡大敗日'))baseLevel='D';
+  else if(hitNames.has('十惡大敗日'))baseLevel='E';
   else if(hitNames.has('月建日'))baseLevel='D';
   else if(hitNames.has('六不成六不合'))baseLevel='C';
   else if(hitNames.has('只可小小營為'))baseLevel='C';
@@ -1882,19 +1903,16 @@ function renderDetail(){
       });
     }
   };
-  // calBottom 三欄（col0=董公原文 | col1=修方動土 | col2=擇日吉時）
-  // 預建三欄容器，依序 0→1→2 固定 DOM 順序，避免 lazy-append 造成欄位錯位
+  // calBottom 三欄（董公原文|修方動土|擇日吉時）
   const _cb=document.getElementById('calBottom');
   if(_cb){_cb.innerHTML='';_cb.style.display='none';}
   const _cbCols=[null,null,null];
-  if(_cb){for(let _ci=0;_ci<3;_ci++){const _dv=document.createElement('div');_dv.className='card';_dv.style.cssText='min-width:0;overflow:hidden;display:none;';_cb.appendChild(_dv);_cbCols[_ci]=_dv;}}
   const _cbAp=(node,col)=>{
-    if(!_cb||!_cbCols[col])return;
-    const _dv=_cbCols[col];
-    _dv.innerHTML='';
+    if(!_cb)return;
+    if(!_cbCols[col]){const dv=document.createElement('div');dv.className='card';dv.style.cssText='min-width:0;overflow:hidden;';_cb.appendChild(dv);_cbCols[col]=dv;}
+    _cbCols[col].innerHTML='';
     const cl2=node.cloneNode(true);
-    _dv.appendChild(cl2);
-    _dv.style.display='';
+    _cbCols[col].appendChild(cl2);
     cl2.querySelectorAll('[data-tip]').forEach(function(el){
       el.addEventListener('mouseenter',function(e){showTip(e,decodeURIComponent(el.dataset.tip||''));});
       el.addEventListener('mouseleave',hideTip);
@@ -2020,7 +2038,7 @@ function renderDetail(){
       ${spText?`<div style="font-size:10px;color:#8b6914;margin-top:4px">※ 本日 ${gz} 有特別注記（紅色粗體標出）</div>`:''}
       ${sha3?`<div style="font-size:11px;color:#8b0000;font-weight:500;margin-top:7px;padding:5px 8px;background:#fff5f5;border-radius:5px">⚑ 本月三煞：${sha3}</div>`:''}
       <div style="font-size:11px;color:#d35400;font-weight:500;margin-top:5px;padding:5px 8px;background:#fff8f0;border-radius:5px">⚑ 日三煞（${BR[_dayBr2]}日・正沖${BR[(_dayBr2+6)%12]}）：煞在${_dSha3.dir}方・${_dSha3.sit}的房子忌修造動土</div>`,
-    '#fffbf5'),0);
+    '#fffbf5'),2);
   }
   // ── v17 Zone 3: 用事建議 ────────────────────────────
   {
@@ -2087,7 +2105,7 @@ function renderDetail(){
   }).join('');
   _cbAp(mk_(`${sec('擇日吉時（法訣∩太陽太陰）')}<div style="margin-bottom:6px">${jiHtml}</div>
 <div style="font-size:10.5px;background:#fffbf0;border-radius:4px;padding:4px 8px;margin-bottom:5px;border:1px solid #e8c878"><span style="color:#7a3c00;font-weight:600">⭐ 法訣∩太陽太陰交集：</span><b style="color:#b8622a">${goldStr}</b></div>
-<div style="font-size:11px;color:var(--lite);line-height:1.7">☀ 太陽時（${ya}時）${fh.some(h=>h.hour===ya&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br>☽ 太陰時（${yi2}時）${fh.some(h=>h.hour===yi2&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br><span style="font-size:10px">⭐=三層交集 ☀☽=兩層 ✅=法訣單層</span></div>`),2);}
+<div style="font-size:11px;color:var(--lite);line-height:1.7">☀ 太陽時（${ya}時）${fh.some(h=>h.hour===ya&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br>☽ 太陰時（${yi2}時）${fh.some(h=>h.hour===yi2&&h.isLaw)?'✓ 在法訣吉時內':'✗ 不在法訣吉時內'}。<br><span style="font-size:10px">⭐=三層交集 ☀☽=兩層 ✅=法訣單層</span></div>`),0);}
   {const xf=XIU_FANG[dz]||[];
   if(xf.length){const lb=['正沖方','刑方','煞方','死方','墓方','絕方'],cols=['#c0392b','#c0392b','#d35400','#8b4513','#8b4513','#6b3a1a'],bgs=['#fff5f5','#fff5f5','#fff5f5','#fff8f0','#fff8f0','#fff8f0'];
   const ch=lb.map((l,i)=>`<div style="background:${bgs[i]};border-radius:5px;padding:4px;text-align:center"><div style="font-size:9px;color:${cols[i]};font-weight:500">${l}</div><div style="font-size:14px;font-weight:600;color:${cols[i]}">${xf[i]}方</div></div>`).join('');
@@ -2684,7 +2702,7 @@ function autoFixEngine(){
   if(typeof window.SHI_E_LIST!=='undefined'){window.SHI_E_LIST=undefined;fixed++;console.warn('autoFix: 移除 SHI_E_LIST');}
   if(typeof window.YANG13!=='undefined'){window.YANG13=undefined;fixed++;console.warn('autoFix: 移除 YANG13');}
   // 2. 驗證 ev.ji 不包含總評詞（資料層）
-  window._cleanJi=(ji)=>(ji||[]).filter(j=>j&&!['諸事不宜','百事不宜','百事皆忌','諸事皆忌','百事俱忌'].includes(j.name));
+  window._cleanJi=(ji)=>(ji||[]).filter(j=>j&&!['諸事不宜','百事不宜','百事皆忌','諸事皆忌'].includes(j.name));
   // 3. 驗證 decision.allHits 每個 hit 有 source 標記
   window._validateHits=(hits)=>{
     (hits||[]).forEach(h=>{ if(!h.source)console.warn('hit 缺 source 標記:',h.name); });
